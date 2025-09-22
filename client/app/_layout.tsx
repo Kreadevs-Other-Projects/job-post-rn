@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import "react-native-reanimated";
 import { useEffect } from "react";
+import { View } from "react-native";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -22,7 +23,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <View>
       <Stack
         initialRouteName="index"
         screenOptions={{
@@ -32,10 +33,8 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" />
-        <Stack.Screen name="login" />
-        <Stack.Screen name="signup" />
       </Stack>
       <StatusBar style="auto" />
-    </>
+    </View>
   );
 }
