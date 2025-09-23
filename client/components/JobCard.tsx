@@ -1,21 +1,23 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { colors, radius, spacingX } from '@/constants/style'
 import { scale } from '@/utils/styling'
+import { router } from 'expo-router'
 
 const JobCard = ({ job }) => {
     
   const [expanded, setExpanded] = useState(false);
 
     return (
-        <View style={styles.card}>
+        <Pressable onPress={() => router.push('/jobDetailScreen')}>
+          <View style={styles.card}>
             <Text style={styles.jobTitle}>{job.jobTitle}</Text>
             <Text style={styles.jobLocation}>{job.jobLocation}</Text>
             <Text style={styles.jobType}>{job.jobType}</Text>
 
             <View>
                 <Text style={styles.jobDescripion} numberOfLines={expanded ? undefined : 2} >{job.jobDescription}</Text>
-                <TouchableOpacity onPress={() => setExpanded(!expanded)}>
+                <TouchableOpacity onPress={() => router.push('/jobDetailScreen')}>
                     <Text style={{ color: colors.primary }}>{expanded ? "View less" : "View more"}</Text>
                 </TouchableOpacity>
             </View>
@@ -25,6 +27,7 @@ const JobCard = ({ job }) => {
                 <Text style={styles.time}>{job.timePosted}</Text>
             </View>
         </View>
+        </Pressable>
     )
 }
 

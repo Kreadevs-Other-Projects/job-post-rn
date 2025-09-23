@@ -1,9 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
+import Header from '@/components/Header'
 
 const Application = () => {
   return (
+
+    <>
+    <Header />
+    
      <ScreenWrapper>
       <View style={styles.container}>
         <Text style ={{fontSize: 30}}>
@@ -11,6 +16,7 @@ const Application = () => {
         </Text>
       </View>
     </ScreenWrapper>
+    </>
   )
 }
 
