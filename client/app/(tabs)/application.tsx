@@ -1,21 +1,52 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { FlatList, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import React from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import Header from '@/components/Header'
+import { colors, radius, spacingX } from '@/constants/style'
+import { scale } from '@/utils/styling'
+import JobCard from '@/components/JobCard'
+import { MagnifyingGlassIcon } from 'phosphor-react-native'
 
 const Application = () => {
+
+  const cardData = [
+    {
+      jobTitle: "Hiring Full Stack Developer",
+      jobLocation: "On-site-Karachi, Pakistan",
+      jobType: "Part-time",
+      jobDescription: "We are seeking a talented and motivated Full Stack Developer to join our team. The ideal candidate will be responsible for designing, developing, and maintaining both front-end and back-end components of web applications. You should have strong expertise in modern JavaScript frameworks (such as React or Angular), server-side technologies (Node.js, Python, or similar), database management, and API integration.",
+      companyName: "Kreadevs",
+      timePosted: " 5 min ago"
+    },
+  ]
+
   return (
 
     <>
-    <Header />
-    
-     <ScreenWrapper>
-      <View style={styles.container}>
-        <Text style ={{fontSize: 30}}>
-          Application
-        </Text>
-      </View>
-    </ScreenWrapper>
+      <Header />
+
+      <ScrollView>
+        <ScreenWrapper>
+
+          <View style={styles.container}>
+
+            <View style={styles.cardContainer}>
+              <View>
+                <Text style={{ fontSize: scale(20), fontWeight: 600, color: colors.neutral600 }}>Applied Jobs</Text>
+              </View>
+
+
+              {/* Jobs For you cards */}
+
+              <FlatList
+                data={cardData}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => <JobCard job={item} />}
+              />
+            </View>
+          </View>
+        </ScreenWrapper>
+      </ScrollView>
     </>
   )
 }
@@ -23,9 +54,39 @@ const Application = () => {
 export default Application
 
 const styles = StyleSheet.create({
-   container: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
+
+  SearchBar: {
+      alignItems: "center",
+      borderRadius: radius._10,
+      width: "90%",
+      backgroundColor: colors.neutral100,
+      flexDirection: "row",
+      shadowColor: "#000",
+      borderColor: colors.primary,
+      borderWidth: 1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    icon: {
+      marginHorizontal: spacingX._10,
+      color: colors.neutral400
+    },
+  
+    searchInput: {
+      height: 50,
+      fontSize: 16,
+      color: colors.neutral800
+    },
+  
+    cardContainer: {
+      marginTop: 20,
+      width: '90%',
+      flex: 1,
+    },
 })
