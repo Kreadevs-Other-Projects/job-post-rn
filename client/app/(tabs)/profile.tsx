@@ -5,7 +5,7 @@ import Header from '@/components/Header'
 import { getProfilePicture } from '@/services/imageService'
 import { scale, verticalScale } from '@/utils/styling'
 import { colors, radius, spacingX, spacingY } from '@/constants/style'
-import { CaretCircleDoubleDownIcon, CaretLeftIcon, GearIcon, LockIcon, Log, LogIcon, SignOutIcon, UserIcon } from 'phosphor-react-native'
+import { CaretLeftIcon, GearIcon, LockIcon, SignOutIcon, UserIcon } from 'phosphor-react-native'
 
 
 type accountOptionProps = {

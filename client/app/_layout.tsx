@@ -3,6 +3,8 @@ import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import "react-native-reanimated";
 import { useEffect } from "react";
+import Toast from "react-native-toast-message";
+import { AppProvider } from '../context/context.js'
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -23,17 +25,21 @@ export default function RootLayout() {
 
   return (
     <>
-      <Stack
-        initialRouteName="index"
-        screenOptions={{
-          headerShown: false,
-          gestureEnabled: false,
-          animation: "slide_from_bottom",
-        }}
-      >
-        <Stack.Screen name="index" />
-      </Stack>
-      <StatusBar style="dark" />
+      <AppProvider>
+        <Stack
+          initialRouteName="index"
+          screenOptions={{
+            headerShown: false,
+            gestureEnabled: false,
+            animation: "slide_from_bottom",
+          }}
+        >
+          <Stack.Screen name="index" />
+        </Stack>
+        <StatusBar style="dark" />
+        <Toast />
+
+      </AppProvider>
     </>
   );
 }

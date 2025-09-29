@@ -10,7 +10,7 @@ const index = () => {
 
     useEffect(() => {
         const timeout = setTimeout(() => {
-            router.navigate('/(tabs)/home')
+            router.navigate('/auth/auth')
         }, 2000);
     }, [])
 

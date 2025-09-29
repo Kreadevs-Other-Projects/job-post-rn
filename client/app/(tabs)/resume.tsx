@@ -2,7 +2,6 @@ import { StyleSheet, Text, TextInput, View, Button, TouchableOpacity } from 'rea
 import React, { useState } from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import Header from '@/components/Header'
-import DocumentPicker from "react-native-document-picker";
 import { colors } from '@/constants/style';
 
 const Resume = () => {
