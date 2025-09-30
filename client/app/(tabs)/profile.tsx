@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import ScreenWrapper from '@/components/ScreenWrapper'
 import Header from '@/components/Header'
@@ -6,13 +6,15 @@ import { getProfilePicture } from '@/services/imageService'
 import { scale, verticalScale } from '@/utils/styling'
 import { colors, radius, spacingX, spacingY } from '@/constants/style'
 import { CaretLeftIcon, GearIcon, LockIcon, SignOutIcon, UserIcon } from 'phosphor-react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { router } from 'expo-router'
 
 
 type accountOptionProps = {
   title: string,
   icon: React.ReactNode,
   bgColor?: string,
-  // routeName: any
+  routeName: any
 }
 const Profile = () => {
 
@@ -26,7 +28,7 @@ const Profile = () => {
       />,
       bgColor: "#6366f1",
 
-      // routeName: "/(tabs)/edit-profile"
+      routeName: "/(tabs)/edit-profile"
     },
 
     {
@@ -37,7 +39,7 @@ const Profile = () => {
         weight='fill'
       />,
       bgColor: "#6366f1",
-      // routeName: "/(tabs)/edit-profile"
+      routeName: "/(tabs)/edit-profile"
     },
 
     {
@@ -48,7 +50,7 @@ const Profile = () => {
         weight="fill"
       />,
       bgColor: "#6366f1",
-      // routeName: "/(tabs)/edit-profile"
+      routeName: "/(tabs)/edit-profile"
     },
 
     {
@@ -59,8 +61,7 @@ const Profile = () => {
         weight='fill'
       />,
       bgColor: "#6366f1",
-
-      // routeName: "/(tabs)/edit-profile"
+      routeName: "/auth"
     }
   ]
 
@@ -85,7 +86,17 @@ const Profile = () => {
 
                 // inside map
                 <View style={{ marginHorizontal: spacingX._20 }}>
-                  <TouchableOpacity style={{ marginBottom: spacingY._20 }}>
+                  <TouchableOpacity style={{ marginBottom: spacingY._20 }} onPress={async() => {
+                    if(option.title === "Logout"){
+                      try {
+                        Alert.alert("Are you sure you want to login")
+                        await AsyncStorage.clear()
+                        router.navigate('/auth')
+                      } catch (error) {
+                        
+                      }
+                    }
+                  }}>
                     <View
                       style={{
                         flexDirection: "row",

@@ -2,9 +2,9 @@ import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import "react-native-reanimated";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Toast from "react-native-toast-message";
-import { AppProvider } from '../context/context.js'
+import { AppContext, AppProvider } from '../context/context.js'
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -23,6 +23,8 @@ export default function RootLayout() {
     return null;
   }
 
+  
+
   return (
     <>
       <AppProvider>
@@ -35,6 +37,9 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="index" />
+          <Stack.Screen name="auth" />
+          <Stack.Screen name="employer/home" />
+
         </Stack>
         <StatusBar style="dark" />
         <Toast />

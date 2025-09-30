@@ -9,15 +9,21 @@ import {
   KeyboardAvoidingView,
   Platform
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import ScreenWrapper from "@/components/ScreenWrapper"
 import { colors, radius, spacingX } from "@/constants/style";
 import { scale, verticalScale } from "@/utils/styling";
-import { url } from '../url.js';
+import { url } from './url.js';
 import Toast from 'react-native-toast-message';
 import { Dropdown } from 'react-native-element-dropdown';
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AppContext } from "@/context/context.js";
+import { jwtDecode } from "jwt-decode";
+
+interface MyJwtPayload {
+  id: string;
+}
 
 
 type registerProps = {
@@ -31,22 +37,13 @@ type loginForm = {
   email: string,
   password: string,
 }
-
-
-
 const { width } = Dimensions.get("window")
+
 const Auth = () => {
   const tabs = ["login", "signup"];
   const [activeTab, setActiveTab] = useState("login");
-
-  // const translateX = useRef(new Animated.Value(0)).current
-
-  // useEffect(() => {
-  //   Animated.spring(translateX, {
-  //       toValue: activeTab === "login" ? 0 : -width,
-  //       useNativeDriver: true
-  //   }).start()
-  // }, [activeTab])
+  const { setAuthToken, setUserId, setRole } = useContext(AppContext)
+  const userRef = useRef<string | null>(null)
 
   const [registerForm, setRegisterForm] = useState<registerProps>({
     name: "",
@@ -71,65 +68,58 @@ const Auth = () => {
 
 
   const handleChange = (field: keyof registerProps, value: string) => {
-    // if (activeTab === "login") {
-    //   setLoginForm((prev) => ({
-    //     ...prev, [field]: value
-    //   }))
-    // } else {
-    //   setRegisterForm((prev) => ({
-    //     ...prev, [field]: value
-    //   }))
-    // }
-
-    setLoginForm((prev) => ({
-      ...prev, [field]: value
-    }))
-  }
-
-  const registerUser = async () => {
-    if (Object.values(registerForm).some(val => val === "")) {
-      Toast.show({
-        type: "error",
-        text1: "Please fill all fields"
-      })
-    }
-    const response = await fetch(`http://192.168.100.102:5000/api/auth/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        name: registerForm.name,
-        email: registerForm.email,
-        password: registerForm.password,
-        role: registerForm.role
-      })
-    })
-
-    const result = await response.json()
-
-    if (result.success) {
-      Toast.show({
-        type: 'success',
-        text1: "User registered successfully"
-      })
-
+    if (activeTab === "login") {
+      setLoginForm((prev) => ({
+        ...prev, [field]: value
+      }))
     } else {
-      Toast.show({
-        type: "error",
-        text1: result.message
-      })
+      setRegisterForm((prev) => ({
+        ...prev, [field]: value
+      }))
     }
-  }
 
-  const loginUser = async () => {
-    try {
-      setLoading(true); // show spinner
-      const response = await fetch("http://192.168.100.102:5000/api/auth/login", {
+    const registerUser = async () => {
+      if (Object.values(registerForm).some(val => val === "")) {
+        Toast.show({
+          type: "error",
+          text1: "Please fill all fields"
+        })
+      }
+      const response = await fetch(`http://192.168.100.102:5000/api/auth/register`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
+        body: JSON.stringify({
+          name: registerForm.name,
+          email: registerForm.email,
+          password: registerForm.password,
+          role: registerForm.role
+        })
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        Toast.show({
+          type: 'success',
+          text1: "User registered successfully"
+        })
+
+      } else {
+        Toast.show({
+          type: "error",
+          text1: result.message
+        })
+      }
+    }
+  }
+  const loginUser = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://192.168.100.102:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: LoginForm.email,
           password: LoginForm.password,
@@ -140,76 +130,44 @@ const Auth = () => {
       console.log("result", result);
 
       if (!response.ok) {
-        throw new Error("Login failed", result.message);
+        throw new Error("Login failed: " + (result.message || "Unknown error"));
       }
 
       await AsyncStorage.setItem("TOKEN", result.token);
-      await AsyncStorage.setItem("userId", result.id.toString());
-      // setAuthToken(result.token);
-      // const decodeToken = jwtDecode<MyJwtPayload>(result.token);
-      // const storedUserToken = decodeToken?.id;
+      await AsyncStorage.setItem("userId", result.user.id);
+      await AsyncStorage.setItem("role", result.user.role);
 
-      // if (storedUserToken) {
-      //   userRef.current = storedUserToken;
-      //   setUserId(storedUserToken);
-      // } else {
-      //   console.log("No user found for this id");
-      // }
+      setAuthToken(result.token);
+      setRole(result.user.role);
+
+
+      const decodeToken = jwtDecode<MyJwtPayload>(result.token);
+      const storedUserToken = decodeToken?.id;
+      if (storedUserToken) {
+        userRef.current = storedUserToken;
+        setUserId(storedUserToken);
+      } else {
+        console.log("No user found for this id");
+      }
 
       Toast.show({
         type: "success",
         text1: "Congratulations",
         text2: "User Login Successfully",
       });
+      router.replace('/(tabs)/home')
 
-      router.navigate('/(tabs)/home');
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
       Toast.show({
         type: "error",
         text1: "Failed",
-        text2: "Server Error Please try again later",
+        text2: "Server Error. Please try again later",
       });
     } finally {
-      setLoading(false); // hide spinner
+      setLoading(false);
     }
   };
-
-  // const loginUser = async () => {
-
-  //   if (Object.values(LoginForm).some(val => val === "")) {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Please fill all fields"
-  //     })
-  //   }
-
-  //   const response = await fetch(`http://192.168.100.102:5000/api/auth/login`, {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({
-  //       email: LoginForm.email,
-  //       password: LoginForm.password,
-  //     })
-  //   })
-
-  //   const result = await response.json()
-
-  //   if (result.success) {
-  //     Toast.show({
-  //       type: 'success',
-  //       text1: "Loged in sucessfully"
-  //     })
-  //     router.replace('/(tabs)/home')
-  //   } else {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: result.message
-  //     })
-  //   }
-  // }
 
   return (
     <ScreenWrapper>
@@ -248,10 +206,8 @@ const Auth = () => {
             })}
           </View>
 
-          {/* Form */}
           <View style={styles.formContainer}>
             {activeTab === "login" ? (
-              // Login Form
               <View style={styles.formInner}>
                 <TextInput
                   placeholder="Email"
@@ -290,7 +246,6 @@ const Auth = () => {
                 </Text>
               </View>
             ) : (
-              // Signup Form
               <View style={styles.formInner}>
                 <View style={{ flexDirection: "row" }}>
                   <TextInput
@@ -344,7 +299,7 @@ const Auth = () => {
                   />
                 </View>
 
-                <TouchableOpacity style={styles.button} onPress={registerUser}>
+                <TouchableOpacity style={styles.button} >
                   <Text style={styles.buttonText}>Signup</Text>
                 </TouchableOpacity>
 
@@ -368,7 +323,6 @@ const Auth = () => {
     </ScreenWrapper>
   );
 };
-
 export default Auth;
 
 const styles = StyleSheet.create({
@@ -411,10 +365,8 @@ const styles = StyleSheet.create({
   },
 
   input: {
-    // borderRadius: radius._10,
     borderBottomWidth: 1,
     borderColor: colors.neutral400,
-    // backgroundColor: colors.neutral100,
     paddingVertical: verticalScale(8),
     paddingHorizontal: spacingX._10,
     fontSize: scale(14),
@@ -441,7 +393,6 @@ const styles = StyleSheet.create({
 
   dropdown: {
     height: verticalScale(50),
-    // backgroundColor: colors.neutral200,
     borderWidth: 2,
     borderColor: colors.primary,
     borderRadius: radius._17,
@@ -462,14 +413,14 @@ const styles = StyleSheet.create({
 
   selectedTextStyle: {
     fontSize: 16,
-    color: colors.primary, // 👈 selected text thoda prominent lagayega
+    color: colors.primary,
     fontWeight: "500",
   },
 
   iconStyle: {
     width: 22,
     height: 22,
-    tintColor: colors.primary, // 👈 dropdown arrow bhi brand color ho jaye
+    tintColor: colors.primary,
   },
 
   itemTextStyle: {
