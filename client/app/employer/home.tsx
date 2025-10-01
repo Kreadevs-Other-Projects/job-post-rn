@@ -2,8 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
-import { scale } from "@/utils/styling";
-import { colors, radius } from "@/constants/style";
+import { scale, verticalScale } from "@/utils/styling";
+import { colors, radius, spacingX } from "@/constants/style";
 import DashboardCard from "@/components/employer/DashboardCard";
 
 const Home = () => {
@@ -17,15 +17,22 @@ const Home = () => {
               <Text style={styles.headerText}>Dashboard Overview</Text>
               <Text>Welcome back!</Text>
             </View> 
-            <View style={{ backgroundColor: colors.primary, padding: 10, borderRadius: radius._10, marginHorizontal: 60}}>
+            {/* <View style={{ backgroundColor: colors.primary, padding: 10, borderRadius: radius._10, marginHorizontal: spacingX._20}}>
               <TouchableOpacity>
                 <Text style={{color: colors.white, fontSize: scale(14)}}>Post Job</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
 
-          <View>
-            <DashboardCard/>
+          <View style={{ width: "100%", flexDirection: 'row', justifyContent: 'space-between', gap:10, marginTop: verticalScale(30)}}>
+            <DashboardCard title="Total Job Posted" count={24}/>
+            <DashboardCard title="Total Job Applicant" count={84}/>
+          </View>
+
+          <View style={styles.postJobBtn}>
+            <TouchableOpacity>
+              <Text>Post a job</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScreenWrapper>
@@ -38,10 +45,12 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginHorizontal: spacingX._15,
+
   },
 
   header: {
-    margin: scale(10),
+    // margin: scale(),
     flexDirection: 'row',
     alignItems: 'center'
   },
@@ -50,4 +59,10 @@ const styles = StyleSheet.create({
     fontSize: scale(24),
     fontWeight: 600,
   },
+
+  postJobBtn: {
+    position: 'absolute',
+    bottom: 0,
+    
+  }
 });
