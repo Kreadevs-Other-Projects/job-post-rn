@@ -1,7 +1,15 @@
 import { Stack } from "expo-router";
 
 export default function EmployerLayout() {
-    <Stack>
-        <Stack.Screen name="home" />
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      {/* This name must match the file name inside employer folder */}
+      <Stack.Screen name="home" />
+      {/* Other screens in employer can go here */}
     </Stack>
+  );
 }

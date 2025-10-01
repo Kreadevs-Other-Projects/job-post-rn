@@ -5,6 +5,7 @@ import "react-native-reanimated";
 import { useContext, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import { AppContext, AppProvider } from '../context/context.js'
+import EmployerLayout from "./employer/_layout.js";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
