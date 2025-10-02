@@ -4,11 +4,13 @@ const upload = require("../middleware/upload");
 const {
   listApplications,
   apply,
+  appliedJobs,
 } = require("../controllers/applicationController");
 
-router.post("/", upload.single("resume"), apply);
+router.post("/", upload.single("cv"), apply);
 
-// List applications for a job: /api/applications?job=jobId
 router.get("/", listApplications);
+
+router.get("/applied", appliedJobs);
 
 module.exports = router;
