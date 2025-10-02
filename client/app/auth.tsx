@@ -7,15 +7,15 @@ import {
   Animated,
   Dimensions,
   KeyboardAvoidingView,
-  Platform
+  Platform,
 } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import ScreenWrapper from "@/components/ScreenWrapper"
+import ScreenWrapper from "@/components/ScreenWrapper";
 import { colors, radius, spacingX } from "@/constants/style";
 import { scale, verticalScale } from "@/utils/styling";
-import { url } from './url.js';
-import Toast from 'react-native-toast-message';
-import { Dropdown } from 'react-native-element-dropdown';
+import { url } from "./url.js";
+import Toast from "react-native-toast-message";
+import { Dropdown } from "react-native-element-dropdown";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppContext } from "@/context/context.js";
@@ -25,106 +25,110 @@ interface MyJwtPayload {
   id: string;
 }
 
-
 type registerProps = {
-  name: string,
-  email: string,
-  password: string,
-  role: string
-}
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+};
 
 type loginForm = {
-  email: string,
-  password: string,
-}
-const { width } = Dimensions.get("window")
+  email: string;
+  password: string;
+};
+const { width } = Dimensions.get("window");
 
 const Auth = () => {
   const tabs = ["login", "signup"];
   const [activeTab, setActiveTab] = useState("login");
-  const { setAuthToken, setUserId, setRole } = useContext(AppContext)
-  const userRef = useRef<string | null>(null)
+  const { setAuthToken, setUserId, setRole } = useContext(AppContext);
+  const userRef = useRef<string | null>(null);
 
   const [registerForm, setRegisterForm] = useState<registerProps>({
     name: "",
     email: "",
     password: "",
-    role: "Employer"
-  })
+    role: "Employer",
+  });
 
   const roleOptions = [
     { label: "employer", value: "employer" },
     { label: "job seeker", value: "job seeker" },
   ];
 
-
-  const [chooseRole, setChooseRole] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [chooseRole, setChooseRole] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [LoginForm, setLoginForm] = useState<loginForm>({
     email: "",
     password: "",
-  })
-
+  });
 
   const handleChange = (field: keyof registerProps, value: string) => {
     if (activeTab === "login") {
       setLoginForm((prev) => ({
-        ...prev, [field]: value
-      }))
+        ...prev,
+        [field]: value,
+      }));
     } else {
       setRegisterForm((prev) => ({
-        ...prev, [field]: value
-      }))
+        ...prev,
+        [field]: value,
+      }));
     }
 
     const registerUser = async () => {
-      if (Object.values(registerForm).some(val => val === "")) {
+      if (Object.values(registerForm).some((val) => val === "")) {
         Toast.show({
           type: "error",
-          text1: "Please fill all fields"
-        })
+          text1: "Please fill all fields",
+        });
       }
-      const response = await fetch(`http://192.168.100.102:5000/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: registerForm.name,
-          email: registerForm.email,
-          password: registerForm.password,
-          role: registerForm.role
-        })
-      })
+      const response = await fetch(
+        `http://192.168.100.102:5000/api/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: registerForm.name,
+            email: registerForm.email,
+            password: registerForm.password,
+            role: registerForm.role,
+          }),
+        }
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.success) {
         Toast.show({
-          type: 'success',
-          text1: "User registered successfully"
-        })
-
+          type: "success",
+          text1: "User registered successfully",
+        });
       } else {
         Toast.show({
           type: "error",
-          text1: result.message
-        })
+          text1: result.message,
+        });
       }
-    }
-  }
+    };
+  };
   const loginUser = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://192.168.100.102:5000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: LoginForm.email,
-          password: LoginForm.password,
-        }),
-      });
+      const response = await fetch(
+        "http://192.168.100.102:5000/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: LoginForm.email,
+            password: LoginForm.password,
+          }),
+        }
+      );
 
       const result = await response.json();
       console.log("result", result);
@@ -140,7 +144,6 @@ const Auth = () => {
       setAuthToken(result.token);
       setRole(result.user.role);
 
-
       const decodeToken = jwtDecode<MyJwtPayload>(result.token);
       const storedUserToken = decodeToken?.id;
       if (storedUserToken) {
@@ -155,8 +158,7 @@ const Auth = () => {
         text1: "Congratulations",
         text2: "User Login Successfully",
       });
-      router.replace('/(tabs)/home')
-
+      router.replace("/(tabs)/home");
     } catch (error) {
       console.error("Login error:", error);
       Toast.show({
@@ -171,12 +173,19 @@ const Auth = () => {
 
   return (
     <ScreenWrapper>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "height" : "padding"} style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "height" : "padding"}
+        style={{ flex: 1 }}
+      >
         <View style={styles.container}>
           <View style={{ marginTop: verticalScale(50) }}>
-            <Text style={{ fontSize: scale(50) }}>Jobi<Text style={{ fontSize: scale(50), color: colors.primary }}>FY</Text></Text>
+            <Text style={{ fontSize: scale(50) }}>
+              Jobi
+              <Text style={{ fontSize: scale(50), color: colors.primary }}>
+                FY
+              </Text>
+            </Text>
           </View>
-          {/* Toggle Buttons */}
           <View style={styles.switchContainer}>
             {tabs.map((tab) => {
               const isActive = activeTab === tab;
@@ -221,7 +230,6 @@ const Auth = () => {
                   placeholderTextColor={colors.neutral500}
                   style={styles.input}
                   onChangeText={(pass) => handleChange("password", pass)}
-
                 />
 
                 <TouchableOpacity>
@@ -264,19 +272,25 @@ const Auth = () => {
                   keyboardType="default"
                 />
 
-
-
                 <TextInput
                   placeholder="Password"
                   secureTextEntry
                   placeholderTextColor={colors.neutral500}
                   style={styles.input}
-                  onChangeText={(password) => handleChange("password", password)}
+                  onChangeText={(password) =>
+                    handleChange("password", password)
+                  }
                   keyboardType="default"
                 />
 
                 <View style={{ gap: 10 }}>
-                  <Text style={{ fontSize: 16, fontWeight: "500", color: colors.neutral700 }}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "500",
+                      color: colors.neutral700,
+                    }}
+                  >
                     Choose Role
                   </Text>
 
@@ -299,7 +313,7 @@ const Auth = () => {
                   />
                 </View>
 
-                <TouchableOpacity style={styles.button} >
+                <TouchableOpacity style={styles.button}>
                   <Text style={styles.buttonText}>Signup</Text>
                 </TouchableOpacity>
 

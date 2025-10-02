@@ -1,130 +1,68 @@
-import React, { useEffect, useRef } from "react";
-import {
-  Animated,
-  Easing,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-  StyleProp,
-} from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import React from "react";
 import { colors, radius } from "@/constants/style";
-import { scale, verticalScale } from "@/utils/styling";
-import LinearGradient from "react-native-linear-gradient";
+import { scale } from "@/utils/styling";
 
-type DashboardCardProps = {
+type cardProps = {
   title: string;
-  count: number | string;
-  style?: StyleProp<ViewStyle>;
-  size?: "sm" | "md" | "lg";
+  count: number;
+  icons: React.ReactNode;
 };
 
-const DashboardCard: React.FC<DashboardCardProps> = ({
-  title,
-  count,
-  style,
-  size = "md",
-}) => {
-  // animated value cycles 0 -> 1 -> 0 continuously
-  const anim = useRef(new Animated.Value(0)).current;
-
-
-
-  <View style={styles.card}>
-    <LinearGradient
-      colors={["rgba(0,0,0,0.2)", "transparent"]}
-      style={StyleSheet.absoluteFillObject}
-    />
-    <Text>Content</Text>
-  </View>
-
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(anim, {
-          toValue: 1,
-          duration: 2600,
-          easing: Easing.inOut(Easing.linear),
-          useNativeDriver: false,
-        }),
-        Animated.timing(anim, {
-          toValue: 0,
-          duration: 2600,
-          easing: Easing.inOut(Easing.linear),
-          useNativeDriver: false,
-        }),
-      ])
-    ).start();
-  }, [anim]);
-
-  // interpolate border color through a small palette
-  const borderColor = anim.interpolate({
-    inputRange: [0, 0.35, 0.7, 1],
-    outputRange: [
-      colors.primary ?? "#4F46E5",
-      "#06B6D4", // teal
-      "#F59E0B", // amber
-      colors.primary ?? "#4F46E5",
-    ],
-  });
-
-  // subtle pulsing glow
-  const glow = anim.interpolate({
-    inputRange: [0, 0.5, 1],
-    outputRange: [0.06, 0.18, 0.06],
-  });
-
-  const cardHeight =
-    size === "sm" ? verticalScale(110) : size === "lg" ? verticalScale(190) : verticalScale(150);
-
+const DashboardCard = ({ title, count, icons }: cardProps) => {
   return (
-    <Animated.View
-      style={[
-        styles.outer, // outer provides animated border & shadow
-        { borderColor, shadowOpacity: (glow as any) },
-        style,
+    <Pressable
+      style={({ pressed }) => [
+        styles.card,
+        pressed && styles.cardPressed,
       ]}
     >
-      {/* inner content — transparent glass body */}
-      <View style={[styles.inner, { height: cardHeight }]}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.count}>{count}</Text>
-      </View>
-    </Animated.View>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.count}>{count}</Text>
+      <View style={styles.iconWrapper}>{icons}</View>
+    </Pressable>
   );
 };
 
 export default DashboardCard;
 
 const styles = StyleSheet.create({
- outer: {
-  borderRadius: radius._15,
-  borderWidth: 2,
-  backgroundColor: "rgba(255,255,255,0.05)",
-  overflow: "hidden",
-  // remove shadow
-  shadowColor: "transparent",
-  elevation: 0,
-},
-  inner: {
-    backgroundColor: "rgba(255,255,255,0.05)", // not fully transparent → stops shadow leak
-    borderRadius: radius._13,
-    paddingHorizontal: scale(16),
-    paddingVertical: verticalScale(14),
-    alignItems: "center",
-    justifyContent: "center",
+  card: {
+    width: "48%",
+    height: 75,
+    backgroundColor: colors.neutral100,
+    borderRadius: radius._15,
+    padding: scale(10),
+    borderCurve: "continuous",
+
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+
+  cardPressed: {
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 1,
   },
 
   title: {
+    fontFamily: "arial",
     fontSize: scale(14),
-    color: colors.primary,
     fontWeight: "600",
-    marginBottom: verticalScale(6),
   },
   count: {
-    fontSize: scale(26),
-    color: "#FFFFFF", // strong contrast on dark backgrounds
-    fontWeight: "800",
+    fontFamily: "arial",
+    fontSize: scale(18),
+    color: colors.primary,
+    fontWeight: "600",
+  },
+  iconWrapper: {
+    position: "absolute",
+    right: 10,
+    top: 10,
   },
 });

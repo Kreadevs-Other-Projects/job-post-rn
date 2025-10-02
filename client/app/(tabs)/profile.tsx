@@ -84,7 +84,6 @@ const Profile = () => {
             {options.map((option, index) => {
               return (
 
-                // inside map
                 <View style={{ marginHorizontal: spacingX._20 }}>
                   <TouchableOpacity style={{ marginBottom: spacingY._20 }} onPress={async() => {
                     if(option.title === "Logout"){
@@ -101,12 +100,10 @@ const Profile = () => {
                       style={{
                         flexDirection: "row",
                         alignItems: "center",
-                        justifyContent: "space-between", // pushes chevron to end
+                        justifyContent: "space-between",
                       }}
                     >
-                      {/* Left side: icon + text */}
                       <View style={{ flexDirection: "row", alignItems: "center", gap: scale(12) }}>
-                        {/* Icon wrapper */}
                         <View
                           style={{
                             width: verticalScale(40),
@@ -120,7 +117,6 @@ const Profile = () => {
                           {option.icon}
                         </View>
 
-                        {/* Text */}
                         <Text
                           style={{
                             fontSize: scale(16),
@@ -132,7 +128,6 @@ const Profile = () => {
                         </Text>
                       </View>
 
-                      {/* Chevron icon */}
                       <CaretLeftIcon size={22} color={colors.neutral600} weight="bold" />
                     </View>
                   </TouchableOpacity>
@@ -152,7 +147,6 @@ export default Profile
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: 'center',
   },
 
   avatarContainer: {

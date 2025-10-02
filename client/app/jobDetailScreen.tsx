@@ -64,7 +64,6 @@ const jobDetailScreen = () => {
                         <Text style={{ fontSize: scale(24), fontWeight: 600, textAlign: 'left', marginTop: spacingY._20, fontFamily: 'GeistBold' }}>Hiring Full Stack Developer</Text>
                     </View>
 
-                    {/* About the job */}
                     <View>
                         <View style={{ marginTop: spacingY._20 }}>
                             <Text style={{ fontSize: scale(18), fontWeight: 600, fontFamily: 'GeistSemiBold' }}>
@@ -100,7 +99,6 @@ const jobDetailScreen = () => {
                         </View>
                     </View>
 
-                    {/* Activity on this job */}
                     {/* <View>
                         <Text style={{ fontSize: scale(16), fontWeight: 600 }}>Activity on this job:</Text>
                         <Text>Invite Sent: 10</Text>
