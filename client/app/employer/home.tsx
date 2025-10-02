@@ -1,20 +1,20 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
-import Header from "@/components/Header";
 import { scale, verticalScale } from "@/utils/styling";
 import { colors, radius, spacingX } from "@/constants/style";
 import DashboardCard from "@/components/employer/DashboardCard";
-import { TrendUpIcon } from "phosphor-react-native";
+import { LogIcon, SignOut, TrendUpIcon } from "phosphor-react-native";
 import RecentJobsApplid from "@/components/employer/AppliedJob";
 import PostJobForm from "./postJobScreen";
+import Header from "@/components/Header";
 
 const Home = () => {
   const [showForm, setShowForm] = useState(false);
 
   return (
     <>
-      <Header />
+      <Header icon={<SignOut color="white" size={20}/>}/>
       <ScreenWrapper>
         <View style={styles.container}>
           <View style={styles.header}>
@@ -50,7 +50,7 @@ const Home = () => {
               <Text>Recent Applicants</Text>
             </View>
 
-            <View>
+            <View style={{marginTop: verticalScale(10)}}>
               <RecentJobsApplid
                 name="John"
                 role="Full Stack Developer"

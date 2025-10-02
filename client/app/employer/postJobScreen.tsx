@@ -1,3 +1,4 @@
+import { colors } from "@/constants/style";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -8,9 +9,17 @@ import {
   StyleSheet,
   Animated,
   ScrollView,
+  Dimensions,
 } from "react-native";
 
-const PostJobForm = ({ visible, onClose }) => {
+const { height } = Dimensions.get("window");
+
+type postJobScreenProps = {
+  visible: boolean,
+  onClose: () => void
+}
+
+const PostJobForm = ({ visible, onClose }:postJobScreenProps) => {
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
   const [location, setLocation] = useState("");
@@ -18,7 +27,8 @@ const PostJobForm = ({ visible, onClose }) => {
   const [experience, setExperience] = useState("");
   const [description, setDescription] = useState("");
 
-  const slideAnim = useRef(new Animated.Value(600)).current; // start from bottom
+  // start from screen bottom
+  const slideAnim = useRef(new Animated.Value(height)).current;
 
   useEffect(() => {
     if (visible) {
@@ -29,7 +39,7 @@ const PostJobForm = ({ visible, onClose }) => {
       }).start();
     } else {
       Animated.timing(slideAnim, {
-        toValue: 600,
+        toValue: height,
         duration: 300,
         useNativeDriver: true,
       }).start();
@@ -37,7 +47,7 @@ const PostJobForm = ({ visible, onClose }) => {
   }, [visible]);
 
   return (
-    <Modal transparent visible={visible} animationType="fade">
+    <Modal transparent visible={visible} animationType="slide">
       <View style={styles.overlay}>
         <TouchableOpacity
           style={styles.overlayBg}
@@ -113,7 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   overlayBg: {
-    flex: 1,
+    flex: 1
   },
   sheet: {
     backgroundColor: "white",
@@ -121,6 +131,10 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: "80%",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   title: {
     fontSize: 20,
@@ -137,7 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   submitBtn: {
-    backgroundColor: "#007AFF",
+    backgroundColor: colors.primary,
     padding: 15,
     borderRadius: 10,
     alignItems: "center",

@@ -41,19 +41,19 @@ const { width } = Dimensions.get("window");
 const Auth = () => {
   const tabs = ["login", "signup"];
   const [activeTab, setActiveTab] = useState("login");
-  const { setAuthToken, setUserId, setRole } = useContext(AppContext);
+  const { setAuthToken, setUserId, setRole, role } = useContext(AppContext);
   const userRef = useRef<string | null>(null);
 
   const [registerForm, setRegisterForm] = useState<registerProps>({
     name: "",
     email: "",
     password: "",
-    role: "Employer",
+    role: "",
   });
 
   const roleOptions = [
     { label: "employer", value: "employer" },
-    { label: "job seeker", value: "job seeker" },
+    { label: "applicant", value: "applicant" },
   ];
 
   const [chooseRole, setChooseRole] = useState("");
@@ -76,44 +76,43 @@ const Auth = () => {
         [field]: value,
       }));
     }
-
-    const registerUser = async () => {
-      if (Object.values(registerForm).some((val) => val === "")) {
-        Toast.show({
-          type: "error",
-          text1: "Please fill all fields",
-        });
+  }
+  const registerUser = async () => {
+    if (Object.values(registerForm).some((val) => val === "")) {
+      Toast.show({
+        type: "error",
+        text1: "Please fill all fields",
+      });
+    }
+    const response = await fetch(
+      `http://192.168.100.102:5000/api/auth/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: registerForm.name,
+          email: registerForm.email,
+          password: registerForm.password,
+          role: registerForm.role,
+        }),
       }
-      const response = await fetch(
-        `http://192.168.100.102:5000/api/auth/register`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: registerForm.name,
-            email: registerForm.email,
-            password: registerForm.password,
-            role: registerForm.role,
-          }),
-        }
-      );
+    );
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (result.success) {
-        Toast.show({
-          type: "success",
-          text1: "User registered successfully",
-        });
-      } else {
-        Toast.show({
-          type: "error",
-          text1: result.message,
-        });
-      }
-    };
+    if (result.success) {
+      Toast.show({
+        type: "success",
+        text1: "User registered successfully",
+      });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: result.message,
+      });
+    }
   };
   const loginUser = async () => {
     try {
@@ -137,6 +136,9 @@ const Auth = () => {
         throw new Error("Login failed: " + (result.message || "Unknown error"));
       }
 
+      console.log(result.user.role);
+      
+
       await AsyncStorage.setItem("TOKEN", result.token);
       await AsyncStorage.setItem("userId", result.user.id);
       await AsyncStorage.setItem("role", result.user.role);
@@ -158,7 +160,11 @@ const Auth = () => {
         text1: "Congratulations",
         text2: "User Login Successfully",
       });
-      router.replace("/(tabs)/home");
+      if(role === "employer"){
+        router.replace('/employer/home')
+      } else {
+        router.replace('/(tabs)/home')
+      }
     } catch (error) {
       console.error("Login error:", error);
       Toast.show({
@@ -313,7 +319,7 @@ const Auth = () => {
                   />
                 </View>
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={registerUser}>
                   <Text style={styles.buttonText}>Signup</Text>
                 </TouchableOpacity>
 

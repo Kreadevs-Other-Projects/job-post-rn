@@ -39,7 +39,7 @@ export default function RootLayout() {
         >
           <Stack.Screen name="index" />
           <Stack.Screen name="auth" />
-          <Stack.Screen name="employer/home" />
+          <Stack.Screen name="employer" />
 
         </Stack>
         <StatusBar style="dark" />

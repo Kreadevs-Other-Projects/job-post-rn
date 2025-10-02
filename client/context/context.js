@@ -53,7 +53,8 @@ export const AppProvider = ({ children }) => {
                 userId,
                 setUserId,
                 userRef,
-                setRole
+                setRole,
+                role
             }
             }
         >

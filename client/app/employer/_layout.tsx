@@ -9,6 +9,7 @@ export default function EmployerLayout() {
     >
       <Stack.Screen name="home" />
       <Stack.Screen name="applicantDetailScreen"/>
+      <Stack.Screen name="postJobScreen"/>
     </Stack>
   );
 }

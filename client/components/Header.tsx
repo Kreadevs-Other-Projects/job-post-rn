@@ -1,33 +1,50 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { scale, verticalScale } from '@/utils/styling'
 import { colors, radius } from '@/constants/style'
+import { LogIcon } from 'phosphor-react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { router } from 'expo-router'
 
+type HeaderProps = {
+    icon?: React.ReactNode
+}
 
+const Header = ({ icon }: HeaderProps) => {
 
-const Header = () => {
+    const logout = async () => {
+        await AsyncStorage.clear()
+        router.replace('/auth')
+    }
+
     return (
         <View style={styles.container}>
-            <View style={{marginTop: verticalScale(50)}}>
-                <Text
-                style=
-                {{
-                    fontSize: scale(30),
-                    fontWeight: 'bold'
-                }}>
-                Jobi
+            <View style={{ marginTop: verticalScale(50) }}>
                 <Text
                     style=
                     {{
                         fontSize: scale(30),
-                        color: colors.primary,
                         fontWeight: 'bold'
-
                     }}>
-                    FY
+                    Jobi
+                    <Text
+                        style=
+                        {{
+                            fontSize: scale(30),
+                            color: colors.primary,
+                            fontWeight: 'bold'
+
+                        }}>
+                        FY
+                    </Text>
                 </Text>
-            </Text>
             </View>
+
+            {icon && (
+                <TouchableOpacity style={{ alignItems: 'center', backgroundColor: colors.primary, marginTop: verticalScale(50), padding: 7, borderRadius: 45 }} onPress={() => logout()}>
+                    {icon}
+                </TouchableOpacity>
+            )}
         </View>
     )
 }
@@ -40,6 +57,9 @@ const styles = StyleSheet.create({
         height: verticalScale(100),
         paddingHorizontal: scale(20),
         backgroundColor: colors.white,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
         // borderBottomEndRadius: radius._20,
         // borderBottomStartRadius: radius._20,
     },

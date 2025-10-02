@@ -10,27 +10,29 @@ const Index = () => {
   const { userId, authToken, role } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   console.log("Role", role);
-    
-  //   const timeout = setTimeout(() => {
-  //     if (!authToken) {
-  //       router.replace('/auth');
-  //     } else {
-  //       router.replace('/(tabs)/home')
-  //     }
-  //     setLoading(false);
-  //   }, 1500);
-
-  //   return () => clearTimeout(timeout);
-  // }, [authToken]);
-
   useEffect(() => {
+    console.log("Role", role);
+    
     const timeout = setTimeout(() => {
-        router.push('/employer/home')
+      if (!userId || !role) {
+        router.replace('/auth');
+      } else if(role === "applicant"){
+        router.replace('/(tabs)/home')
+      } else if(role === "employer") {
+        router.replace('/')
+      }
+      setLoading(false);
     }, 1500);
+
     return () => clearTimeout(timeout);
-  }, );
+  }, [authToken, role]);
+
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //       router.push('/employer/home')
+  //   }, 1500);
+  //   return () => clearTimeout(timeout);
+  // }, );
 
 //   if (loading) {
     return (
