@@ -7,9 +7,8 @@ export default function EmployerLayout() {
         headerShown: false,
       }}
     >
-      {/* This name must match the file name inside employer folder */}
       <Stack.Screen name="home" />
-      {/* Other screens in employer can go here */}
+      <Stack.Screen name="applicantDetailScreen"/>
     </Stack>
   );
 }
