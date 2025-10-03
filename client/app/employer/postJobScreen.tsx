@@ -11,6 +11,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import Toast from "react-native-toast-message";
 
 const { height } = Dimensions.get("window");
 
@@ -19,15 +20,49 @@ type postJobScreenProps = {
   onClose: () => void
 }
 
-const PostJobForm = ({ visible, onClose }:postJobScreenProps) => {
-  const [title, setTitle] = useState("");
-  const [company, setCompany] = useState("");
-  const [location, setLocation] = useState("");
-  const [salary, setSalary] = useState("");
-  const [experience, setExperience] = useState("");
-  const [description, setDescription] = useState("");
+type submitFormProps = {
+  title?: string,
+  companyName?: string,
+  location?: string,
+  expectedSalary?: string,
+  experience?: string,
+  description?: string,
+}
 
-  // start from screen bottom
+const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
+  // const [title, setTitle] = useState("");
+  // const [company, setCompany] = useState("");
+  // const [location, setLocation] = useState("");
+  // const [salary, setSalary] = useState("");
+  // const [experience, setExperience] = useState("");
+  // const [description, setDescription] = useState("");
+
+  const [submitForm, setSubmitForm] = useState({
+    title: "",
+    companyName: "",
+    location: "",
+    expectedSalary: "",
+    experience: "",
+    description: ""
+  })
+
+  const [isModalVisible, setModalVisible] = useState(false)
+
+  const handleChange = (field: keyof submitFormProps, value: string) => {
+
+    if (field === "expectedSalary") {
+      let cleaned = value.replace(/^\$/, "")
+      setSubmitForm((prev) => ({
+        ...prev,
+        expectedSalary: cleaned ? `$${cleaned}` : ""
+      }))
+    } else {
+      setSubmitForm((prev) => ({
+        ...prev,
+        [field]: value
+      }))
+    }
+  }
   const slideAnim = useRef(new Animated.Value(height)).current;
 
   useEffect(() => {
@@ -46,8 +81,56 @@ const PostJobForm = ({ visible, onClose }:postJobScreenProps) => {
     }
   }, [visible]);
 
+  const handleSubmit = async () => {
+    if (Object.values(submitForm).some((val) => val === "")) {
+      Toast.show({
+        type: 'error',
+        text1: "Please Fill All fields"
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`http://192.168.100.102:5000/api/jobs/addJob`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "Application/json"
+        },
+
+        body: JSON.stringify({
+          title: submitForm.title,
+          companyName: submitForm.companyName,
+          location: submitForm.location,
+          expectedSalary: submitForm.expectedSalary,
+          experience: submitForm.experience,
+          description: submitForm.description
+        })
+      })
+
+      const result = await response.json()
+
+      if (result.Ok) {
+        Toast.show({
+          type: "success",
+          text1: "Job added sucessfully"
+        })
+        setModalVisible(false)
+      } else {
+        Toast.show({
+          type: "error",
+          text1: result.message
+        })
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: error.message
+      })
+    }
+  }
+
   return (
-    <Modal transparent visible={visible} animationType="slide">
+    <Modal transparent visible={visible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
       <View style={styles.overlay}>
         <TouchableOpacity
           style={styles.overlayBg}
@@ -70,43 +153,43 @@ const PostJobForm = ({ visible, onClose }:postJobScreenProps) => {
             <TextInput
               placeholder="Job Title (e.g. Software Engineer)"
               style={styles.input}
-              value={title}
-              onChangeText={setTitle}
+              value={submitForm.title}
+              onChangeText={(title) => handleChange("title", title)}
             />
             <TextInput
               placeholder="Company Name"
               style={styles.input}
-              value={company}
-              onChangeText={setCompany}
+              value={submitForm.companyName}
+              onChangeText={(companyName) => handleChange("companyName", companyName)}
             />
             <TextInput
               placeholder="Job Location"
               style={styles.input}
-              value={location}
-              onChangeText={setLocation}
+              value={submitForm.location}
+              onChangeText={(location) => handleChange("location", location)}
             />
             <TextInput
-              placeholder="Expected Salary (e.g. $1000 - $2000)"
+              placeholder="$"
               style={styles.input}
-              value={salary}
-              onChangeText={setSalary}
+              value={submitForm.expectedSalary}
+              onChangeText={(expectedSalary) => handleChange("expectedSalary", expectedSalary)}
               keyboardType="numeric"
             />
             <TextInput
               placeholder="Experience Required (e.g. 2 years)"
               style={styles.input}
-              value={experience}
-              onChangeText={setExperience}
+              value={submitForm.experience}
+              onChangeText={(experience) => handleChange("experience", experience)}
             />
             <TextInput
               placeholder="Job Description"
               style={[styles.input, { height: 100, textAlignVertical: "top" }]}
               multiline
-              value={description}
-              onChangeText={setDescription}
+              value={submitForm.description}
+              onChangeText={(description) => handleChange("description", description)}
             />
 
-            <TouchableOpacity style={styles.submitBtn}>
+            <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
               <Text style={styles.submitText}>Post Job</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -119,7 +202,7 @@ const PostJobForm = ({ visible, onClose }:postJobScreenProps) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.17)",
     justifyContent: "flex-end",
   },
   overlayBg: {

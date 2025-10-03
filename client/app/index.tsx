@@ -10,22 +10,21 @@ const Index = () => {
   const { userId, authToken, role } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    console.log("Role", role);
+  // useEffect(() => {
     
-    const timeout = setTimeout(() => {
-      if (!userId || !role) {
-        router.replace('/auth');
-      } else if(role === "applicant"){
-        router.replace('/(tabs)/home')
-      } else if(role === "employer") {
-        router.replace('/')
-      }
-      setLoading(false);
-    }, 1500);
+  //   const timeout = setTimeout(() => {
+  //     if (!userId || !role) {
+  //       router.replace('/auth');
+  //     } else if(role === "applicant"){
+  //       router.replace('/(tabs)/home')
+  //     } else if(role === "employer") {
+  //       router.replace('/')
+  //     }
+  //     setLoading(false);
+  //   }, 1500);
 
-    return () => clearTimeout(timeout);
-  }, [authToken, role]);
+  //   return () => clearTimeout(timeout);
+  // }, []);
 
   // useEffect(() => {
   //   const timeout = setTimeout(() => {
@@ -34,7 +33,14 @@ const Index = () => {
   //   return () => clearTimeout(timeout);
   // }, );
 
-//   if (loading) {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+        router.push('/(tabs)/home')
+    }, 1500);
+    return () => clearTimeout(timeout);
+  }, );
+
+  if (loading) {
     return (
       <ScreenWrapper style={{ backgroundColor: colors.primary }}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -49,7 +55,7 @@ const Index = () => {
     );
   }
 
-//   return null; 
-// };
+  return null; 
+};
 
 export default Index;

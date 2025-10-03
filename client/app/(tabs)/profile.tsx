@@ -81,10 +81,10 @@ const Profile = () => {
           </View>
 
           <View style={{ marginTop: 100 }}>
-            {options.map((option, index) => {
+            {options.map((option, key) => {
               return (
 
-                <View style={{ marginHorizontal: spacingX._20 }}>
+                <View style={{ marginHorizontal: spacingX._20 }} key={key}>
                   <TouchableOpacity style={{ marginBottom: spacingY._20 }} onPress={async() => {
                     if(option.title === "Logout"){
                       try {

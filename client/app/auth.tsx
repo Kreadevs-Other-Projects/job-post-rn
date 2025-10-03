@@ -8,6 +8,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
@@ -20,6 +21,7 @@ import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppContext } from "@/context/context.js";
 import { jwtDecode } from "jwt-decode";
+import * as ImagePicker from 'expo-image-picker'
 
 interface MyJwtPayload {
   id: string;
@@ -30,6 +32,7 @@ type registerProps = {
   email: string;
   password: string;
   role: string;
+  ProfilePic: string
 };
 
 type loginForm = {
@@ -43,12 +46,14 @@ const Auth = () => {
   const [activeTab, setActiveTab] = useState("login");
   const { setAuthToken, setUserId, setRole, role } = useContext(AppContext);
   const userRef = useRef<string | null>(null);
+  const [image, setImage] = useState<string | null>(null)
 
   const [registerForm, setRegisterForm] = useState<registerProps>({
     name: "",
     email: "",
     password: "",
     role: "",
+    ProfilePic: ""
   });
 
   const roleOptions = [
@@ -63,6 +68,21 @@ const Auth = () => {
     email: "",
     password: "",
   });
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images", "videos"],
+      allowsEditing: true,
+      aspect: [2, 4],
+      quality: 1
+    })
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri)
+    }
+  }
 
   const handleChange = (field: keyof registerProps, value: string) => {
     if (activeTab === "login") {
@@ -96,6 +116,7 @@ const Auth = () => {
           email: registerForm.email,
           password: registerForm.password,
           role: registerForm.role,
+          ProfileImage: registerForm.ProfilePic
         }),
       }
     );
@@ -137,7 +158,7 @@ const Auth = () => {
       }
 
       console.log(result.user.role);
-      
+
 
       await AsyncStorage.setItem("TOKEN", result.token);
       await AsyncStorage.setItem("userId", result.user.id);
@@ -160,7 +181,7 @@ const Auth = () => {
         text1: "Congratulations",
         text2: "User Login Successfully",
       });
-      if(role === "employer"){
+      if (role === "employer") {
         router.replace('/employer/home')
       } else {
         router.replace('/(tabs)/home')
@@ -289,6 +310,8 @@ const Auth = () => {
                   keyboardType="default"
                 />
 
+
+
                 <View style={{ gap: 10 }}>
                   <Text
                     style={{
@@ -319,8 +342,20 @@ const Auth = () => {
                   />
                 </View>
 
+                
+
+                <View>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: colors.neutral300 }]} onPress={pickImage}>
+                    <Text style={styles.buttonText}>Upload your image</Text>
+                  </TouchableOpacity>
+
+                  <View style={}>
+                    {image && <Image source={{uri: image}} style={{width: 50, height: 50, backgroundColor: colors.neutral100}}/>}
+                  </View>
+                </View>
+
                 <TouchableOpacity style={styles.button} onPress={registerUser}>
-                  <Text style={styles.buttonText}>Signup</Text>
+                  <Text style={[styles.buttonText, { color: colors.neutral600 }]}>Signup</Text>
                 </TouchableOpacity>
 
                 <Text style={{ textAlign: "center" }}>
@@ -332,7 +367,7 @@ const Auth = () => {
                       fontWeight: "600",
                     }}
                   >
-                    Signup
+                    Login
                   </Text>
                 </Text>
               </View>

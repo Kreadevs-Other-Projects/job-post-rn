@@ -11,12 +11,12 @@ const JobCard = ({ job }) => {
     return (
         <Pressable onPress={() => router.push('/jobDetailScreen')}>
           <View style={styles.card}>
-            <Text style={styles.jobTitle}>{job.jobTitle}</Text>
-            <Text style={styles.jobLocation}>{job.jobLocation}</Text>
-            <Text style={styles.jobType}>{job.jobType}</Text>
+            <Text style={styles.jobTitle}>{job.title}</Text>
+            <Text style={styles.jobLocation}>{job.location}</Text>
+            {/* <Text style={styles.jobType}>{job.jobType}</Text> */}
 
             <View>
-                <Text style={styles.jobDescripion} numberOfLines={expanded ? undefined : 2} >{job.jobDescription}</Text>
+                <Text style={styles.jobDescripion} numberOfLines={expanded ? undefined : 2} >{job.description}</Text>
                 <TouchableOpacity onPress={() => router.push('/jobDetailScreen')}>
                     <Text style={{ color: colors.primary }}>{expanded ? "View less" : "View more"}</Text>
                 </TouchableOpacity>
@@ -24,7 +24,7 @@ const JobCard = ({ job }) => {
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacingX._10 }}>
                 <Text>at <Text style={{ color: colors.secondary, fontWeight: 600 }}>{job.companyName}</Text></Text>
-                <Text style={styles.time}>{job.timePosted}</Text>
+                {/* <Text style={styles.time}>{job.timePosted}</Text> */}
             </View>
         </View>
         </Pressable>

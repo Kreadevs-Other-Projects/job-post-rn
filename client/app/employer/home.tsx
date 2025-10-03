@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 
 const Home = () => {
   const [showForm, setShowForm] = useState(false);
-
+  
   return (
     <>
       <Header icon={<SignOut color="white" size={20}/>}/>

@@ -7,15 +7,17 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
 import { colors, radius, spacingX } from "@/constants/style";
 import { MagnifyingGlassIcon } from "phosphor-react-native";
 import { scale } from "@/utils/styling";
 import JobCard from "@/components/JobCard";
+import { AppContext } from "@/context/context";
 const Home = () => {
   const [expanded, setExpanded] = useState(false);
+  const { setAllJob, allJobs } = useContext(AppContext)
 
   const cardData = [
     {
@@ -39,6 +41,11 @@ const Home = () => {
     },
   ];
 
+  useEffect(() => {
+    console.log("allJobs",allJobs);
+    
+  }, [])
+
   return (
     <>
       <Header />
@@ -59,7 +66,7 @@ const Home = () => {
               ></TextInput>
             </View>
 
-            <View style={styles.cardContainer}>
+            {/* <View style={styles.cardContainer}>
               <View>
                 <Text
                   style={{
@@ -71,13 +78,7 @@ const Home = () => {
                   Jobs For you
                 </Text>
               </View>
-
-              <FlatList
-                data={cardData}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => <JobCard job={item} />}
-              />
-            </View>
+            </View> */}
 
             <View style={styles.cardContainer}>
               <View>
@@ -93,8 +94,8 @@ const Home = () => {
               </View>
 
               <FlatList
-                data={cardData}
-                keyExtractor={(item, index) => index.toString()}
+                data={allJobs}
+                keyExtractor={(item, index) => item._id}
                 renderItem={({ item }) => <JobCard job={item} />}
               />
             </View>
