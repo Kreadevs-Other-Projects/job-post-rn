@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post("/", addJob);
 router.get("/", listJobs);
-router.get("/:id", getJob);
 router.get("/all", getAllJobs);
+router.get("/:id", getJob);
 
 module.exports = router;
