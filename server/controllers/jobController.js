@@ -70,3 +70,12 @@ exports.getJob = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getAllJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find().sort({ createdAt: -1 });
+    res.status(200).json(jobs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
