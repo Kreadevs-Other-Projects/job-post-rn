@@ -12,7 +12,9 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS || 10));
     const hashed = await bcrypt.hash(password, salt);
 
-    user = new User({ name, email, password: hashed, role });
+    const profilePic = req.file ? `/uploads/${req.file.filename}` : null;
+
+    user = new User({ name, email, password: hashed, role, profilePic });
     await user.save();
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -26,6 +28,7 @@ exports.register = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        profilePic: user.profilePic,
       },
     });
   } catch (err) {
