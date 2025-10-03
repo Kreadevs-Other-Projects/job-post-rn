@@ -7,12 +7,12 @@ const {
   appliedJobs,
 } = require("../controllers/employerController");
 
-router.get("/", getAllApplications);
+router.get("/getAllApplications", getAllApplications);
 
-router.get("/applied", appliedJobs);
+router.get("/appliedJobs", appliedJobs);
 
-router.get("/:id", getApplication);
+router.get("/getApplication/:id", getApplication);
 
-router.put("/:id", updateStatus);
+router.put("/updateStatus/:id", updateStatus);
 
 module.exports = router;

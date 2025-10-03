@@ -79,3 +79,18 @@ exports.getAllJobs = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.getWeeklyJobs = async (req, res) => {
+  try {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const jobs = await Job.find({ createdAt: { $gte: oneWeekAgo } }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json(jobs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
