@@ -4,6 +4,7 @@ const {
   listJobs,
   getJob,
   getAllJobs,
+  getWeeklyJobs,
 } = require("../controllers/jobController");
 const router = express.Router();
 
