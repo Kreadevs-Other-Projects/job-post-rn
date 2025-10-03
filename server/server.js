@@ -6,9 +6,9 @@ const connectDB = require("./config/db");
 const authRoute = require("./routes/authRoute");
 const jobsRoute = require("./routes/jobRoute");
 const appsRoute = require("./routes/applicationRoute");
-const employerRoute = require("./routes/employerRoutes");
+const employerRoute = require("./routes/employerRoute");
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 const app = express();
 app.use(
