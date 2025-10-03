@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Application = require("../models/Application");
 
 exports.getAllApplications = async (req, res) => {

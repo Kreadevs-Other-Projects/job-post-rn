@@ -5,14 +5,14 @@ const {
   getApplication,
   updateStatus,
   appliedJobs,
-} = require("../controllers/applicationController");
+} = require("../controllers/employerController");
 
 router.get("/", getAllApplications);
+
+router.get("/applied", appliedJobs);
 
 router.get("/:id", getApplication);
 
 router.put("/:id", updateStatus);
-
-router.get("/applied", appliedJobs);
 
 module.exports = router;
