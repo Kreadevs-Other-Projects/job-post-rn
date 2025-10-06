@@ -5,42 +5,59 @@ import ScreenWrapper from '@/components/ScreenWrapper';
 import { scale } from '@/utils/styling';
 import { colors } from '@/constants/style';
 import { AppContext } from '@/context/context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Index = () => {
   const { userId, authToken, role } = useContext(AppContext);
-  const [loading, setLoading] = useState(true);
+  const [isNavigated, setIsNavigated] = useState(true);
 
-  // useEffect(() => {
-    
-  //   const timeout = setTimeout(() => {
-  //     if (!userId || !role) {
-  //       router.replace('/auth');
-  //     } else if(role === "applicant"){
-  //       router.replace('/(tabs)/home')
-  //     } else if(role === "employer") {
-  //       router.replace('/')
-  //     }
-  //     setLoading(false);
-  //   }, 1500);
+  const Navigation = async () => {
 
-  //   return () => clearTimeout(timeout);
-  // }, []);
+    const newUser = await AsyncStorage.getItem("newUser")
 
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //       router.push('/employer/home')
-  //   }, 1500);
-  //   return () => clearTimeout(timeout);
-  // }, );
+    if (newUser === "0") {
+      const timeout = setTimeout(() => {
+        router.navigate('/entranceScreen')
+        setIsNavigated(false)
+      }, 500)
+      return () => clearTimeout(timeout)
+    } else if (!userId || !authToken) {
+      const timeout = setTimeout(() => {
+        router.navigate('/auth')
+        setIsNavigated(false)
+      }, 500)
+      return () => clearTimeout(timeout)
+    } else if (role === "applicant") {
+      const timeout = setTimeout(() => {
+        router.navigate('/(tabs)/home')
+        setIsNavigated(false)
+      }, 500)
+      return () => clearTimeout(timeout)
+    } else if (role === "employer") {
+      const timeout = setTimeout(() => {
+        router.navigate('/employer/home')
+        setIsNavigated(false)
+      }, 500)
+      return () => clearTimeout(timeout)
+    } else {
+      return (
+        <View><Text>Invalid Page 404</Text></View>
+      )
+    }
+  }
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-        router.push('/(tabs)/home')
-    }, 1500);
-    return () => clearTimeout(timeout);
-  }, );
+    if(!isNavigated){
+      setIsNavigated(true)
+    }
 
-  if (loading) {
+    const timeoutId = setTimeout(() => {
+      Navigation()
+    }, 3000)
+
+    return () => clearTimeout(timeoutId)
+  }, [userId]);
+
     return (
       <ScreenWrapper style={{ backgroundColor: colors.primary }}>
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -54,8 +71,4 @@ const Index = () => {
       </ScreenWrapper>
     );
   }
-
-  return null; 
-};
-
 export default Index;

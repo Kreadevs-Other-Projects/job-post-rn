@@ -34,10 +34,11 @@ export default function RootLayout() {
           screenOptions={{
             headerShown: false,
             gestureEnabled: false,
-            animation: "slide_from_bottom",
+            animation: 'slide_from_right',
           }}
         >
           <Stack.Screen name="index" />
+          <Stack.Screen name="entranceScreen" />
           <Stack.Screen name="auth" />
           <Stack.Screen name="employer" />
 

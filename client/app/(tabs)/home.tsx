@@ -41,10 +41,10 @@ const Home = () => {
     },
   ];
 
-  useEffect(() => {
-    console.log("allJobs",allJobs);
+  // useEffect(() => {
+  //   console.log("allJobs",allJobs);
     
-  }, [])
+  // }, [])
 
   return (
     <>

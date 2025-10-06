@@ -90,7 +90,7 @@ const Profile = () => {
                       try {
                         Alert.alert("Are you sure you want to login")
                         await AsyncStorage.clear()
-                        router.navigate('/auth')
+                        router.replace('/auth')
                       } catch (error) {
                         
                       }

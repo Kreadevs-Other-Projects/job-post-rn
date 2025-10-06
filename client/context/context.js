@@ -54,11 +54,10 @@ export const AppProvider = ({ children }) => {
       const result = await response.json();
       console.log("data", result);
 
-      // agar backend directly array bhej raha hai
       if (Array.isArray(result)) {
         setAllJobs(result);
       } else if (result.success) {
-        setAllJobs(result.jobs); // agar object ke andar jobs hain
+        setAllJobs(result.jobs);
       } else {
         console.log(result.message);
       }

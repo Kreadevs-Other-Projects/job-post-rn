@@ -163,6 +163,7 @@ const Auth = () => {
       await AsyncStorage.setItem("TOKEN", result.token);
       await AsyncStorage.setItem("userId", result.user.id);
       await AsyncStorage.setItem("role", result.user.role);
+      await AsyncStorage.setItem("newUser", "1")
 
       setAuthToken(result.token);
       setRole(result.user.role);
@@ -349,7 +350,7 @@ const Auth = () => {
                     <Text style={styles.buttonText}>Upload your image</Text>
                   </TouchableOpacity>
 
-                  <View style={}>
+                  <View>
                     {image && <Image source={{uri: image}} style={{width: 50, height: 50, backgroundColor: colors.neutral100}}/>}
                   </View>
                 </View>
@@ -358,7 +359,7 @@ const Auth = () => {
                   <Text style={[styles.buttonText, { color: colors.neutral600 }]}>Signup</Text>
                 </TouchableOpacity>
 
-                <Text style={{ textAlign: "center" }}>
+                {/* <Text style={{ textAlign: "center" }}>
                   Already have an account?{" "}
                   <Text
                     style={{
@@ -369,7 +370,7 @@ const Auth = () => {
                   >
                     Login
                   </Text>
-                </Text>
+                </Text> */}
               </View>
             )}
           </View>
