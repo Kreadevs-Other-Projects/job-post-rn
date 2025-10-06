@@ -1,5 +1,6 @@
 const Job = require("../models/Job");
 
+// Add Job
 exports.addJob = async (req, res) => {
   try {
     const {
@@ -9,12 +10,13 @@ exports.addJob = async (req, res) => {
       expectedSalary,
       experience,
       description,
+      jobType,
     } = req.body;
 
-    if (!title || !companyName || !location) {
-      return res
-        .status(400)
-        .json({ error: "Title, company name, and location are required" });
+    if (!title || !companyName || !location || !jobType) {
+      return res.status(400).json({
+        error: "Title, company name, location, and job type are required",
+      });
     }
 
     const job = new Job({
@@ -24,6 +26,7 @@ exports.addJob = async (req, res) => {
       expectedSalary,
       experience,
       description,
+      jobType,
     });
 
     await job.save();
@@ -35,11 +38,12 @@ exports.addJob = async (req, res) => {
 
 exports.listJobs = async (req, res) => {
   try {
-    const { location, q, companyName } = req.query;
+    const { location, q, companyName, jobType } = req.query;
     const filter = {};
 
     if (location) filter.location = new RegExp(location, "i");
     if (companyName) filter.companyName = new RegExp(companyName, "i");
+    if (jobType) filter.jobType = jobType;
     if (q) {
       filter.$or = [
         { title: new RegExp(q, "i") },
@@ -49,7 +53,6 @@ exports.listJobs = async (req, res) => {
     }
 
     const jobs = await Job.find(filter).sort({ createdAt: -1 }).limit(200);
-
     res.json(jobs);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -59,8 +62,8 @@ exports.listJobs = async (req, res) => {
 exports.getJob = async (req, res) => {
   try {
     const { id } = req.params;
-
     const job = await Job.findById(id);
+
     if (!job) {
       return res.status(404).json({ error: "Job not found" });
     }

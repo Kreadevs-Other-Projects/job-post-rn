@@ -7,6 +7,11 @@ const JobSchema = new mongoose.Schema({
   expectedSalary: { type: String },
   experience: { type: String },
   description: { type: String },
+  jobType: {
+    type: String,
+    enum: ["full-time", "part-time", "remote"],
+    required: true,
+  },
   createdAt: { type: Date, default: Date.now },
 });
 
