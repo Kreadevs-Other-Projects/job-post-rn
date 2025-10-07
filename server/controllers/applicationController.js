@@ -45,7 +45,26 @@ const listApplications = async (req, res) => {
   }
 };
 
+const listUserApplications = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email is required" });
+
+    const apps = await Application.find({ email })
+      .populate("job")
+      .sort({ createdAt: -1 });
+
+    if (apps.length === 0)
+      return res.json({ message: "No applications found for this user" });
+
+    return res.json(apps);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   apply,
   listApplications,
+  listUserApplications,
 };

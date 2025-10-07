@@ -2,10 +2,18 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+const { validateEmail } = require("../services/validateEmail");
+const generateVerificationCode = require("../services/otp");
+const { transporter } = require("../services/mail");
+
 const register = async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
+    if (!validateEmail(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
 
@@ -14,15 +22,36 @@ const register = async (req, res) => {
 
     const profilePic = req.file ? `/uploads/${req.file.filename}` : null;
 
-    user = new User({ name, email, password: hashed, role, profilePic });
-    await user.save();
+    const verificationCode = generateVerificationCode();
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    user = new User({
+      name,
+      email,
+      password: hashed,
+      role,
+      profilePic,
+      verificationCode,
+      isVerified: false,
     });
 
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Verify Your Account",
+      html: `
+        <h3>Hello ${name},</h3>
+        <p>Your verification code is:</p>
+        <h2>${verificationCode}</h2>
+        <p>Enter this code in the app to verify your account.</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
     return res.json({
-      token,
+      message: "User registered successfully. Verification email sent.",
       user: {
         id: user._id,
         name: user.name,
@@ -32,7 +61,7 @@ const register = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error(err);
+    console.error("Register error:", err);
     return res.status(500).send("Server error");
   }
 };
@@ -48,6 +77,12 @@ const login = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
 
+    if (!user.isVerified) {
+      return res
+        .status(403)
+        .json({ message: "Please verify your email first." });
+    }
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -67,7 +102,79 @@ const login = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().sort({ createdAt: -1 }).select("-password");
+    return res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const verifyEmail = async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    if (!email || !code) {
+      return res.status(400).json({ message: "Email and code are required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "User already verified" });
+    }
+
+    if (user.verificationCode !== Number(code)) {
+      return res.status(400).json({ message: "Invalid verification code" });
+    }
+
+    user.isVerified = true;
+    user.verificationCode = null;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Email verified successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+      },
+    });
+  } catch (err) {
+    console.error("Email verification error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await User.findByIdAndDelete(id);
+
+    return res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error("Delete user error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 module.exports = {
   register,
   login,
+  getAllUsers,
+  verifyEmail,
+  deleteUser,
 };

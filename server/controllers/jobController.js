@@ -10,6 +10,9 @@ const addJob = async (req, res) => {
       experience,
       description,
       jobType,
+      requirements,
+      skills,
+      benefits,
     } = req.body;
 
     if (!title || !companyName || !location || !jobType) {
@@ -26,6 +29,9 @@ const addJob = async (req, res) => {
       experience,
       description,
       jobType,
+      requirements,
+      skills,
+      benefits,
     });
 
     await job.save();
@@ -97,10 +103,58 @@ const getWeeklyJobs = async (req, res) => {
   }
 };
 
+const updateJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    const job = await Job.findByIdAndUpdate(id, updatedData, { new: true });
+
+    if (!job) return res.status(404).json({ error: "Job not found" });
+
+    res.status(200).json({ message: "Job updated successfully", job });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const deleteJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const job = await Job.findById(id);
+
+    if (!job) return res.status(404).json({ error: "Job not found" });
+
+    await job.deleteOne();
+    res.status(200).json({ message: "Job deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const getRecommendedJobs = async (req, res) => {
+  try {
+    const { skills } = req.query;
+    if (!skills) return res.status(400).json({ error: "Skills required" });
+
+    const skillArray = skills.split(",").map((s) => s.trim());
+    const jobs = await Job.find({
+      skills: { $in: skillArray },
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(jobs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   addJob,
   listJobs,
   getJob,
   getAllJobs,
   getWeeklyJobs,
+  updateJob,
+  deleteJob,
+  getRecommendedJobs,
 };
