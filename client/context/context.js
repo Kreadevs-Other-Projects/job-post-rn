@@ -6,7 +6,7 @@ import { url } from "@/app/url";
 export const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [authToken, setAuthToken] = useState("");
+  const [authToken, setAuthToken] = useState(null);
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState("");
   const [allJobs, setAllJobs] = useState([]);
@@ -69,6 +69,8 @@ export const AppProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    console.log("AuthToken", authToken);
+    
     if (authToken) {
       fetchAllJobs();
     }

@@ -21,7 +21,9 @@ import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppContext } from "@/context/context.js";
 import { jwtDecode } from "jwt-decode";
-import * as ImagePicker from 'expo-image-picker'
+import * as ImagePicker from "expo-image-picker";
+import { OtpInput } from "react-native-otp-entry";
+import VerifyOTP from "@/components/verifyOTP";
 
 interface MyJwtPayload {
   id: string;
@@ -32,7 +34,7 @@ type registerProps = {
   email: string;
   password: string;
   role: string;
-  ProfilePic: string
+  ProfilePic: string;
 };
 
 type loginForm = {
@@ -46,14 +48,14 @@ const Auth = () => {
   const [activeTab, setActiveTab] = useState("login");
   const { setAuthToken, setUserId, setRole, role } = useContext(AppContext);
   const userRef = useRef<string | null>(null);
-  const [image, setImage] = useState<string | null>(null)
+  const [image, setImage] = useState<string | null>(null);
 
   const [registerForm, setRegisterForm] = useState<registerProps>({
     name: "",
     email: "",
     password: "",
     role: "",
-    ProfilePic: ""
+    ProfilePic: "",
   });
 
   const roleOptions = [
@@ -61,8 +63,8 @@ const Auth = () => {
     { label: "applicant", value: "applicant" },
   ];
 
-  const [chooseRole, setChooseRole] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const [LoginForm, setLoginForm] = useState<loginForm>({
     email: "",
@@ -71,18 +73,18 @@ const Auth = () => {
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images", "videos"],
+      mediaTypes: ["images"],
       allowsEditing: true,
-      aspect: [2, 4],
-      quality: 1
-    })
+      aspect: [3, 3],
+      quality: 1,
+    });
 
     console.log(result);
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri)
+      setImage(result.assets[0].uri);
     }
-  }
+  };
 
   const handleChange = (field: keyof registerProps, value: string) => {
     if (activeTab === "login") {
@@ -96,7 +98,10 @@ const Auth = () => {
         [field]: value,
       }));
     }
-  }
+  };
+
+  const handleCheck = () => {};
+
   const registerUser = async () => {
     if (Object.values(registerForm).some((val) => val === "")) {
       Toast.show({
@@ -104,37 +109,47 @@ const Auth = () => {
         text1: "Please fill all fields",
       });
     }
-    const response = await fetch(
-      `http://192.168.100.102:5000/api/auth/register`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: registerForm.name,
-          email: registerForm.email,
-          password: registerForm.password,
-          role: registerForm.role,
-          ProfileImage: registerForm.ProfilePic
-        }),
+    try {
+      const response = await fetch(
+        `http://192.168.100.102:5000/api/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: registerForm.name,
+            email: registerForm.email,
+            password: registerForm.password,
+            role: registerForm.role,
+            ProfileImage: registerForm.ProfilePic,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        Toast.show({
+          type: "success",
+          text1: "User registered successfully",
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: result.message,
+        });
       }
-    );
-
-    const result = await response.json();
-
-    if (result.success) {
-      Toast.show({
-        type: "success",
-        text1: "User registered successfully",
-      });
-    } else {
-      Toast.show({
-        type: "error",
-        text1: result.message,
-      });
+    } catch (error) {
+      if (error) {
+        Toast.show({
+          type: "error",
+          text1: "Internal Server Error",
+        });
+      }
     }
   };
+
   const loginUser = async () => {
     try {
       setLoading(true);
@@ -159,11 +174,10 @@ const Auth = () => {
 
       console.log(result.user.role);
 
-
       await AsyncStorage.setItem("TOKEN", result.token);
       await AsyncStorage.setItem("userId", result.user.id);
       await AsyncStorage.setItem("role", result.user.role);
-      await AsyncStorage.setItem("newUser", "1")
+      await AsyncStorage.setItem("newUser", "1");
 
       setAuthToken(result.token);
       setRole(result.user.role);
@@ -183,9 +197,9 @@ const Auth = () => {
         text2: "User Login Successfully",
       });
       if (role === "employer") {
-        router.replace('/employer/home')
+        router.replace("/employer/home");
       } else {
-        router.replace('/(tabs)/home')
+        router.replace("/(tabs)/home");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -311,8 +325,6 @@ const Auth = () => {
                   keyboardType="default"
                 />
 
-
-
                 <View style={{ gap: 10 }}>
                   <Text
                     style={{
@@ -343,34 +355,48 @@ const Auth = () => {
                   />
                 </View>
 
-                
-
                 <View>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: colors.neutral300 }]} onPress={pickImage}>
+                  <TouchableOpacity
+                    style={[
+                      styles.button,
+                      { backgroundColor: colors.neutral300 },
+                    ]}
+                    onPress={pickImage}
+                  >
                     <Text style={styles.buttonText}>Upload your image</Text>
                   </TouchableOpacity>
 
                   <View>
-                    {image && <Image source={{uri: image}} style={{width: 50, height: 50, backgroundColor: colors.neutral100}}/>}
+                    {image && (
+                      <Image
+                        source={{ uri: image }}
+                        style={{
+                          width: 50,
+                          height: 50,
+                          backgroundColor: colors.neutral100,
+                        }}
+                      />
+                    )}
                   </View>
                 </View>
 
-                <TouchableOpacity style={styles.button} onPress={registerUser}>
-                  <Text style={[styles.buttonText, { color: colors.neutral600 }]}>Signup</Text>
-                </TouchableOpacity>
-
-                {/* <Text style={{ textAlign: "center" }}>
-                  Already have an account?{" "}
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => setShowOtpModal(true)}
+                >
                   <Text
-                    style={{
-                      textAlign: "center",
-                      color: colors.primary,
-                      fontWeight: "600",
-                    }}
+                    style={[styles.buttonText, { color: colors.neutral100 }]}
                   >
-                    Login
+                    Signup
                   </Text>
-                </Text> */}
+                </TouchableOpacity>
+                <VerifyOTP
+                  visible={showOtpModal}
+                  onClose={() => {
+                    setShowOtpModal(false);
+                    registerUser();
+                  }}
+                />
               </View>
             )}
           </View>

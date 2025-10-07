@@ -1,4 +1,5 @@
-import { colors } from "@/constants/style";
+import { colors, radius, spacingX } from "@/constants/style";
+import { verticalScale } from "@/utils/styling";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -11,58 +12,72 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
 import Toast from "react-native-toast-message";
 
 const { height } = Dimensions.get("window");
 
 type postJobScreenProps = {
-  visible: boolean,
-  onClose: () => void
-}
+  visible: boolean;
+  onClose: () => void;
+};
 
 type submitFormProps = {
-  title?: string,
-  companyName?: string,
-  location?: string,
-  expectedSalary?: string,
-  experience?: string,
-  description?: string,
-}
+  title?: string;
+  companyName?: string;
+  location?: string;
+  jobType?: string;
+  experience?: string;
+  description?: string;
+  requirements?: string;
+  skills?: string;
+  benefits?: string;
+  minSalary?: string;
+  maxSalary?: string;
+};
 
 const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
-  // const [title, setTitle] = useState("");
-  // const [company, setCompany] = useState("");
-  // const [location, setLocation] = useState("");
-  // const [salary, setSalary] = useState("");
-  // const [experience, setExperience] = useState("");
-  // const [description, setDescription] = useState("");
+  const jobTypeOptions = [
+    { label: "Full Time", value: "full-time" },
+    { label: "Part Time", value: "part-time" },
+  ];
 
   const [submitForm, setSubmitForm] = useState({
     title: "",
     companyName: "",
     location: "",
-    expectedSalary: "",
+    JobType: "",
     experience: "",
-    description: ""
-  })
+    description: "",
+    requirements: "",
+    skills: "",
+    benefits: "",
+    minSalary: "",
+    maxSalary: "",
+  });
 
-  const [isModalVisible, setModalVisible] = useState(false)
+  const [isModalVisible, setModalVisible] = useState(false);
 
   const handleChange = (field: keyof submitFormProps, value: string) => {
-
-    if (field === "expectedSalary") {
-      let cleaned = value.replace(/^\$/, "")
+    if (field === "minSalary") {
+      let cleaned = value.replace(/^\$/, "");
       setSubmitForm((prev) => ({
         ...prev,
-        expectedSalary: cleaned ? `$${cleaned}` : ""
-      }))
+        expectedSalary: cleaned ? `$${cleaned}` : "",
+      }));
+    } else if (field === "maxSalary") {
+      let cleaned = value.replace(/^\$/, "");
+      setSubmitForm((prev) => ({
+        ...prev,
+        expectedSalary: cleaned ? `$${cleaned}` : "",
+      }));
     } else {
       setSubmitForm((prev) => ({
         ...prev,
-        [field]: value
-      }))
+        [field]: value,
+      }));
     }
-  }
+  };
   const slideAnim = useRef(new Animated.Value(height)).current;
 
   useEffect(() => {
@@ -84,53 +99,66 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
   const handleSubmit = async () => {
     if (Object.values(submitForm).some((val) => val === "")) {
       Toast.show({
-        type: 'error',
-        text1: "Please Fill All fields"
-      })
-      return
+        type: "error",
+        text1: "Please Fill All fields",
+      });
+      return;
     }
 
     try {
-      const response = await fetch(`http://192.168.100.102:5000/api/jobs/addJob`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "Application/json"
-        },
+      const response = await fetch(
+        `http://192.168.100.102:5000/api/jobs/addJob`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "Application/json",
+          },
 
-        body: JSON.stringify({
-          title: submitForm.title,
-          companyName: submitForm.companyName,
-          location: submitForm.location,
-          expectedSalary: submitForm.expectedSalary,
-          experience: submitForm.experience,
-          description: submitForm.description
-        })
-      })
+          body: JSON.stringify({
+            title: submitForm.title,
+            companyName: submitForm.companyName,
+            location: submitForm.location,
+            JobType: submitForm.JobType,
+            experience: submitForm.experience,
+            description: submitForm.description,
+            requirements: submitForm.requirements,
+            skills: submitForm.skills,
+            benefits: submitForm.benefits,
+            minSalary: submitForm.minSalary,
+            maxSalary: submitForm.maxSalary,
+          }),
+        }
+      );
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.Ok) {
         Toast.show({
           type: "success",
-          text1: "Job added sucessfully"
-        })
-        setModalVisible(false)
+          text1: "Job added sucessfully",
+        });
+        setModalVisible(false);
       } else {
         Toast.show({
           type: "error",
-          text1: result.message
-        })
+          text1: result.message,
+        });
       }
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error.message
-      })
+        text1: error.message,
+      });
     }
-  }
+  };
 
   return (
-    <Modal transparent visible={visible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
+    <Modal
+      transparent
+      visible={visible}
+      animationType="slide"
+      onRequestClose={() => setModalVisible(false)}
+    >
       <View style={styles.overlay}>
         <TouchableOpacity
           style={styles.overlayBg}
@@ -138,10 +166,7 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
           onPress={onClose}
         />
         <Animated.View
-          style={[
-            styles.sheet,
-            { transform: [{ translateY: slideAnim }] },
-          ]}
+          style={[styles.sheet, { transform: [{ translateY: slideAnim }] }]}
         >
           <ScrollView
             style={{ flex: 1 }}
@@ -160,7 +185,9 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
               placeholder="Company Name"
               style={styles.input}
               value={submitForm.companyName}
-              onChangeText={(companyName) => handleChange("companyName", companyName)}
+              onChangeText={(companyName) =>
+                handleChange("companyName", companyName)
+              }
             />
             <TextInput
               placeholder="Job Location"
@@ -168,25 +195,63 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
               value={submitForm.location}
               onChangeText={(location) => handleChange("location", location)}
             />
-            <TextInput
-              placeholder="$"
-              style={styles.input}
-              value={submitForm.expectedSalary}
-              onChangeText={(expectedSalary) => handleChange("expectedSalary", expectedSalary)}
-              keyboardType="numeric"
-            />
+
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <TextInput
+                placeholder="Min Salary"
+                style={[styles.input, { width: "48%" }]}
+                value={submitForm.minSalary}
+                onChangeText={(minSalary) =>
+                  handleChange("minSalary", minSalary)
+                }
+                keyboardType="numeric"
+              />
+              <TextInput
+                placeholder="Max Salary"
+                style={[styles.input, { width: "48%" }]}
+                value={submitForm.maxSalary}
+                onChangeText={(maxSalary) =>
+                  handleChange("maxSalary", maxSalary)
+                }
+                keyboardType="numeric"
+              />
+            </View>
+
             <TextInput
               placeholder="Experience Required (e.g. 2 years)"
               style={styles.input}
               value={submitForm.experience}
-              onChangeText={(experience) => handleChange("experience", experience)}
+              onChangeText={(experience) =>
+                handleChange("experience", experience)
+              }
             />
+            <View style={{ gap: 10 }}>
+              <Dropdown
+                style={styles.dropdown}
+                containerStyle={styles.dropdownContainer}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                iconStyle={styles.iconStyle}
+                itemTextStyle={styles.itemTextStyle}
+                closeModalWhenSelectedItem={true}
+                data={jobTypeOptions}
+                maxHeight={200}
+                labelField="label"
+                valueField="value"
+                value={submitForm.JobType}
+                onChange={(item) => {
+                  setSubmitForm({ ...submitForm, JobType: item.value });
+                }}
+              />
+            </View>
             <TextInput
               placeholder="Job Description"
               style={[styles.input, { height: 100, textAlignVertical: "top" }]}
               multiline
               value={submitForm.description}
-              onChangeText={(description) => handleChange("description", description)}
+              onChangeText={(description) =>
+                handleChange("description", description)
+              }
             />
 
             <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
@@ -206,14 +271,14 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   overlayBg: {
-    flex: 1
+    flex: 1,
   },
   sheet: {
     backgroundColor: "white",
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: "80%",
+    maxHeight: "100%",
     position: "absolute",
     bottom: 0,
     left: 0,
@@ -244,6 +309,42 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  dropdown: {
+    height: verticalScale(50),
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderRadius: radius._17,
+    paddingHorizontal: spacingX._12,
+    justifyContent: "center",
+  },
+
+  dropdownContainer: {
+    borderRadius: radius._12,
+    borderWidth: 1,
+    borderColor: colors.primary,
+  },
+
+  placeholderStyle: {
+    fontSize: 16,
+    color: colors.neutral500,
+  },
+
+  selectedTextStyle: {
+    fontSize: 16,
+    color: colors.primary,
+    fontWeight: "500",
+  },
+
+  iconStyle: {
+    width: 22,
+    height: 22,
+    tintColor: colors.primary,
+  },
+
+  itemTextStyle: {
+    fontSize: 15,
+    color: colors.neutral700,
   },
 });
 

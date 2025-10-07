@@ -11,7 +11,6 @@ const JobCard: React.FC<{ job: any }> = ({ job }) => {
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true)
 
-  // small helper: returns compact time-ago like '5m ago', '2h ago', '3d ago'
   const timeAgo = (dateIso?: string) => {
     if (!dateIso) return ''
     const then = new Date(dateIso).getTime()
@@ -34,7 +33,7 @@ const JobCard: React.FC<{ job: any }> = ({ job }) => {
   // }
 
   return (
-    <Pressable onPress={() => router.push('/jobDetailScreen')} style={styles.pressable}>
+  <Pressable onPress={() => router.push({ pathname: '/jobDetailScreen', params: { jobId: job._id ?? job.id } })} style={styles.pressable}>
       <Animated.View style={styles.card} entering={FadeInDown.duration(1500).delay(500).springify()}>
         <View style={styles.headerRow}>
           <Image source={require('../assets/images/icon.png')} style={styles.image} />
