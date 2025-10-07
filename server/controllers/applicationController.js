@@ -1,6 +1,6 @@
 const Application = require("../models/Application");
 
-exports.apply = async (req, res) => {
+const apply = async (req, res) => {
   try {
     const { name, email, description, job } = req.body;
 
@@ -29,7 +29,7 @@ exports.apply = async (req, res) => {
   }
 };
 
-exports.listApplications = async (req, res) => {
+const listApplications = async (req, res) => {
   try {
     const { job } = req.query;
     const filter = {};
@@ -43,4 +43,9 @@ exports.listApplications = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
+};
+
+module.exports = {
+  apply,
+  listApplications,
 };

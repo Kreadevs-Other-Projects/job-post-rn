@@ -1,6 +1,6 @@
 const Application = require("../models/Application");
 
-exports.getAllApplications = async (req, res) => {
+const getAllApplications = async (req, res) => {
   try {
     const applications = await Application.find()
       .populate("job")
@@ -11,7 +11,7 @@ exports.getAllApplications = async (req, res) => {
   }
 };
 
-exports.getApplication = async (req, res) => {
+const getApplication = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -27,7 +27,7 @@ exports.getApplication = async (req, res) => {
   }
 };
 
-exports.updateStatus = async (req, res) => {
+const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -50,7 +50,7 @@ exports.updateStatus = async (req, res) => {
   }
 };
 
-exports.appliedJobs = async (req, res) => {
+const appliedJobs = async (req, res) => {
   try {
     const { email } = req.query;
     if (!email) return res.status(400).json({ error: "Email is required" });
@@ -65,7 +65,7 @@ exports.appliedJobs = async (req, res) => {
   }
 };
 
-exports.uploadResume = async (req, res) => {
+const uploadResume = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
@@ -74,4 +74,12 @@ exports.uploadResume = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+module.exports = {
+  getAllApplications,
+  getApplication,
+  updateStatus,
+  appliedJobs,
+  uploadResume,
 };

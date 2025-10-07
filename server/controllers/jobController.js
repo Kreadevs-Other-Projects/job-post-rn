@@ -1,7 +1,6 @@
 const Job = require("../models/Job");
 
-// Add Job
-exports.addJob = async (req, res) => {
+const addJob = async (req, res) => {
   try {
     const {
       title,
@@ -36,7 +35,7 @@ exports.addJob = async (req, res) => {
   }
 };
 
-exports.listJobs = async (req, res) => {
+const listJobs = async (req, res) => {
   try {
     const { location, q, companyName, jobType } = req.query;
     const filter = {};
@@ -59,7 +58,7 @@ exports.listJobs = async (req, res) => {
   }
 };
 
-exports.getJob = async (req, res) => {
+const getJob = async (req, res) => {
   try {
     const { id } = req.params;
     const job = await Job.findById(id);
@@ -74,7 +73,7 @@ exports.getJob = async (req, res) => {
   }
 };
 
-exports.getAllJobs = async (req, res) => {
+const getAllJobs = async (req, res) => {
   try {
     const jobs = await Job.find().sort({ createdAt: -1 });
     res.status(200).json(jobs);
@@ -83,7 +82,7 @@ exports.getAllJobs = async (req, res) => {
   }
 };
 
-exports.getWeeklyJobs = async (req, res) => {
+const getWeeklyJobs = async (req, res) => {
   try {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -96,4 +95,12 @@ exports.getWeeklyJobs = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+module.exports = {
+  addJob,
+  listJobs,
+  getJob,
+  getAllJobs,
+  getWeeklyJobs,
 };
