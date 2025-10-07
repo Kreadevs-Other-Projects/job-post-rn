@@ -6,7 +6,8 @@ const addJob = async (req, res) => {
       title,
       companyName,
       location,
-      expectedSalary,
+      minSalary,
+      maxSalary,
       experience,
       description,
       jobType,
@@ -21,11 +22,20 @@ const addJob = async (req, res) => {
       });
     }
 
+    if (!minSalary || !maxSalary) {
+      return res
+        .status(400)
+        .json({ error: "Expected salary range (min & max) is required" });
+    }
+
     const job = new Job({
       title,
       companyName,
       location,
-      expectedSalary,
+      salary: {
+        min: minSalary,
+        max: maxSalary,
+      },
       experience,
       description,
       jobType,
@@ -35,7 +45,11 @@ const addJob = async (req, res) => {
     });
 
     await job.save();
-    res.status(201).json({ message: "Job added successfully", job });
+
+    res.status(201).json({
+      message: "Job added successfully",
+      job,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

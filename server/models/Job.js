@@ -4,7 +4,10 @@ const JobSchema = new mongoose.Schema({
   title: { type: String, required: true },
   companyName: { type: String, required: true },
   location: { type: String, required: true },
-  expectedSalary: { type: String },
+  salary: {
+    min: { type: Number, required: true },
+    max: { type: Number, required: true },
+  },
   experience: { type: String },
   description: { type: String },
   requirements: { type: [String], default: [] },
