@@ -17,7 +17,7 @@ const register = async (req, res) => {
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ message: "User already exists" });
 
-    const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS || 10));
+    const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS));
     const hashed = await bcrypt.hash(password, salt);
 
     const profilePic = req.file ? `/uploads/${req.file.filename}` : null;
