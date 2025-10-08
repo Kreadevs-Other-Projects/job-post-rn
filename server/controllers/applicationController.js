@@ -2,18 +2,18 @@ const Application = require("../models/Application");
 
 const apply = async (req, res) => {
   try {
-    const { name, email, description, job } = req.body;
+    const { name, email, description, job_id } = req.body;
 
-    if (!name || !email || !job) {
+    if (!name || !email || !job_id) {
       return res
         .status(400)
-        .json({ error: "Name, email, and job are required" });
+        .json({ error: "Name, email, and job ID are required" });
     }
 
     const resumeUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
     const application = new Application({
-      job,
+      job_id,
       name,
       email,
       description,
@@ -23,7 +23,7 @@ const apply = async (req, res) => {
     await application.save();
     return res
       .status(201)
-      .json({ succes: true, message: "Application submitted", application });
+      .json({ success: true, message: "Application submitted", application });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
