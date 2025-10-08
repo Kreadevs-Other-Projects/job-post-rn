@@ -14,17 +14,35 @@ const register = async (req, res) => {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: "User already exists" });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-    const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS));
+    const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS || 10));
     const hashed = await bcrypt.hash(password, salt);
 
+    const verificationCode = generateVerificationCode();
     const profilePic = req.file ? `/uploads/${req.file.filename}` : null;
 
-    const verificationCode = generateVerificationCode();
+    const mailOptions = {
+      from: `"Job Post" <${process.env.EMAIL}>`,
+      to: email,
+      subject: "Verify Your Account",
+      html: `
+        <h3>Hello ${name},</h3>
+        <p>Your verification code is:</p>
+        <h2>${verificationCode}</h2>
+        <p>Enter this code in the app to verify your account.</p>
+      `,
+    };
 
-    user = new User({
+    console.log(`📧 Sending verification email to: ${email}`);
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully:", info.messageId);
+
+    const user = new User({
       name,
       email,
       password: hashed,
@@ -36,21 +54,7 @@ const register = async (req, res) => {
 
     await user.save();
 
-    const mailOptions = {
-      from: process.env.EMAIL,
-      to: email,
-      subject: "Verify Your Account",
-      html: `
-        <h3>Hello ${name},</h3>
-        <p>Your verification code is:</p>
-        <h2>${verificationCode}</h2>
-        <p>Enter this code in the app to verify your account.</p>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    return res.json({
+    return res.status(201).json({
       message: "User registered successfully. Verification email sent.",
       user: {
         id: user._id,
@@ -61,8 +65,10 @@ const register = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("Register error:", err);
-    return res.status(500).send("Server error");
+    console.error("❌ Register error:", err);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: err.message });
   }
 };
 
