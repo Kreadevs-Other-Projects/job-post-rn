@@ -11,6 +11,7 @@ const ApplicationSchema = new mongoose.Schema({
     enum: ["waiting", "cancelled", "interview"],
     default: "waiting",
   },
+  appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Application" }],
   createdAt: { type: Date, default: Date.now },
 });
 

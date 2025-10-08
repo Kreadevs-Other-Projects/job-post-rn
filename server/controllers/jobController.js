@@ -58,7 +58,6 @@ const addJob = async (req, res) => {
   }
 };
 
-
 const listJobs = async (req, res) => {
   try {
     const { location, q, companyName, jobType } = req.query;
