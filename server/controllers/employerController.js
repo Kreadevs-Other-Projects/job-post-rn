@@ -3,11 +3,29 @@ const Application = require("../models/Application");
 const getAllApplications = async (req, res) => {
   try {
     const applications = await Application.find()
-      .populate("job")
+      .populate("job_id")
       .sort({ createdAt: -1 });
-    res.json(applications);
+
+    if (!applications || applications.length === 0) {
+      console.warn("⚠ No applications found.");
+      return res.status(404).json({
+        success: false,
+        message: "No applications found",
+      });
+    }
+
+    res.json({
+      success: true,
+      count: applications.length,
+      applications,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
