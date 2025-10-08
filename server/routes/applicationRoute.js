@@ -7,7 +7,7 @@ const {
   listUserApplications,
 } = require("../controllers/applicationController");
 
-router.post("/apply", upload.single("cv"), apply);
+router.post("/apply", upload.single("resume"), apply);
 
 router.get("/listApplications", listApplications);
 router.post("/userApplications", listUserApplications);

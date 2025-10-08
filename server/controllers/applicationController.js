@@ -23,7 +23,7 @@ const apply = async (req, res) => {
     await application.save();
     return res
       .status(201)
-      .json({ message: "Application submitted", application });
+      .json({ succes: true, message: "Application submitted", application });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
