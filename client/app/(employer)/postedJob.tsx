@@ -56,7 +56,6 @@ const PostedJob = () => {
               const result = await res.json();
 
               if (res.ok) {
-                // Remove from UI
                 setPostedJobs((prev) => prev.filter((job) => job._id !== id));
               } else {
                 Alert.alert("Error", result.message || "Failed to delete job");
@@ -72,13 +71,12 @@ const PostedJob = () => {
   };
 
   const handleEdit = (job: any) => {
-    // open modal or navigate to edit form
     Alert.alert("Edit", `Editing ${job.title}`);
   };
 
   return (
     <View style={styles.container}>
-        <Header />
+      <Header />
       <ScreenWrapper>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -159,8 +157,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.neutral100 || "#F9FAFB",
-},
-card: {
+  },
+  card: {
     backgroundColor: "#fff",
     borderRadius: radius._15 || 18,
     padding: scale(14),
@@ -170,7 +168,7 @@ card: {
     shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 3,
-    marginHorizontal: spacingX._15
+    marginHorizontal: spacingX._15,
   },
   cardHeader: {
     flexDirection: "row",

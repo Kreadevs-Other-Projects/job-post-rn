@@ -10,17 +10,15 @@ import {
 } from "phosphor-react-native";
 import { StatusBar } from "expo-status-bar";
 
-
 export default function TabsLayout() {
   return (
-
     <>
       <Tabs
         screenOptions={{
           headerShown: false,
           tabBarActiveTintColor: colors.primary,
           tabBarStyle: {
-            height: 60,
+            height: 80,
             backgroundColor: colors.neutral300,
             borderTopWidth: 0,
             borderRightWidth: 0,
@@ -47,7 +45,11 @@ export default function TabsLayout() {
             tabBarLabel: "Resume",
             tabBarIcon: ({ size, color, focused }) =>
               focused ? (
-                <ReadCvLogoIcon size={24} color={colors.primary} weight="fill" />
+                <ReadCvLogoIcon
+                  size={24}
+                  color={colors.primary}
+                  weight="fill"
+                />
               ) : (
                 <ReadCvLogoIcon size={24} color={colors.primary} />
               ),
@@ -71,7 +73,11 @@ export default function TabsLayout() {
             tabBarLabel: "Profile",
             tabBarIcon: ({ size, color, focused }) =>
               focused ? (
-                <UsersThreeIcon size={24} color={colors.primary} weight="fill" />
+                <UsersThreeIcon
+                  size={24}
+                  color={colors.primary}
+                  weight="fill"
+                />
               ) : (
                 <UsersThreeIcon size={scale(20)} color={colors.primary} />
               ),

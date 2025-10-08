@@ -112,8 +112,8 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
 
     try {
       const response = await fetch(
-        `http://192.168.100.7:5000/api/jobs/addJob`,
-        // `http://192.168.100.102:5000/api/jobs/addJob`,
+        // `http://192.168.100.7:5000/api/jobs/addJob`,
+        `http://192.168.100.102:5000/api/jobs/addJob`,
         {
           method: "POST",
           headers: {

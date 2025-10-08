@@ -17,7 +17,7 @@ import { scale, verticalScale } from "@/utils/styling";
 import { url } from "./url.js";
 import Toast from "react-native-toast-message";
 import { Dropdown } from "react-native-element-dropdown";
-import { router } from "expo-router";
+import { router, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppContext } from "@/context/context.js";
 import { jwtDecode } from "jwt-decode";
@@ -100,15 +100,7 @@ const Auth = () => {
     }
   };
 
-  const handleCheck = () => {};
-
   const registerUser = async () => {
-    if (Object.values(registerForm).some((val) => val === "")) {
-      Toast.show({
-        type: "error",
-        text1: "Please fill all fields",
-      });
-    }
     try {
       const response = await fetch(
         `http://192.168.100.102:5000/api/auth/register`,
@@ -128,25 +120,29 @@ const Auth = () => {
       );
 
       const result = await response.json();
+      console.log(result);
 
       if (result.success) {
         Toast.show({
           type: "success",
-          text1: "User registered successfully",
+          text1: result.message || "Verification code sent to your email",
+        });
+        router.push({
+          pathname: "/verifyEmail",
+          params: { email: registerForm.email },
         });
       } else {
         Toast.show({
           type: "error",
-          text1: result.message,
+          text1: result.message || "Something went wrong",
         });
       }
     } catch (error) {
-      if (error) {
-        Toast.show({
-          type: "error",
-          text1: "Internal Server Error",
-        });
-      }
+      console.error("Register error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Internal Server Error",
+      });
     }
   };
 
@@ -382,7 +378,7 @@ const Auth = () => {
 
                 <TouchableOpacity
                   style={styles.button}
-                  onPress={() => setShowOtpModal(true)}
+                  onPress={() => registerUser()}
                 >
                   <Text
                     style={[styles.buttonText, { color: colors.neutral100 }]}
@@ -390,13 +386,13 @@ const Auth = () => {
                     Signup
                   </Text>
                 </TouchableOpacity>
-                <VerifyOTP
+                {/* <VerifyOTP
                   visible={showOtpModal}
                   onClose={() => {
                     setShowOtpModal(false);
                     registerUser();
                   }}
-                />
+                /> */}
               </View>
             )}
           </View>

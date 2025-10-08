@@ -11,56 +11,57 @@ const Index = () => {
   const { userId, authToken, role } = useContext(AppContext);
   const [isNavigated, setIsNavigated] = useState(true);
 
-  // const Navigation = async () => {
+  const Navigation = async () => {
+    const newUser = await AsyncStorage.getItem("newUser");
 
-  //   const newUser = await AsyncStorage.getItem("newUser")
-
-  //   if (newUser === "0") {
-  //     const timeout = setTimeout(() => {
-  //       router.navigate('/entranceScreen')
-  //       setIsNavigated(false)
-  //     }, 500)
-  //     return () => clearTimeout(timeout)
-  //   } else if (!userId || !authToken) {
-  //     const timeout = setTimeout(() => {
-  //       router.navigate('/auth')
-  //       setIsNavigated(false)
-  //     }, 500)
-  //     return () => clearTimeout(timeout)
-  //   } else if (role === "applicant") {
-  //     const timeout = setTimeout(() => {
-  //       router.navigate('/(tabs)/home')
-  //       setIsNavigated(false)
-  //     }, 500)
-  //     return () => clearTimeout(timeout)
-  //   } else if (role === "employer") {
-  //     const timeout = setTimeout(() => {
-  //       router.navigate('/employer/home')
-  //       setIsNavigated(false)
-  //     }, 500)
-  //     return () => clearTimeout(timeout)
-  //   } else {
-  //     return (
-  //       <View><Text>Invalid Page 404</Text></View>
-  //     )
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if(!isNavigated){
-  //     setIsNavigated(true)
-  //   }
-
-  //   const timeoutId = setTimeout(() => {
-  //     Navigation()
-  //   }, 3000)
-
-  //   return () => clearTimeout(timeoutId)
-  // }, [userId]);
+    if (newUser === "0") {
+      const timeout = setTimeout(() => {
+        router.navigate("/entranceScreen");
+        setIsNavigated(false);
+      }, 500);
+      return () => clearTimeout(timeout);
+    } else if (!userId || !authToken) {
+      const timeout = setTimeout(() => {
+        router.navigate("/auth");
+        setIsNavigated(false);
+      }, 500);
+      return () => clearTimeout(timeout);
+    } else if (role === "applicant") {
+      const timeout = setTimeout(() => {
+        router.navigate("/(tabs)/home");
+        setIsNavigated(false);
+      }, 500);
+      return () => clearTimeout(timeout);
+    } else if (role === "employer") {
+      const timeout = setTimeout(() => {
+        router.navigate("/(employer)/home");
+        setIsNavigated(false);
+      }, 500);
+      return () => clearTimeout(timeout);
+    } else {
+      return (
+        <View>
+          <Text>Invalid Page 404</Text>
+        </View>
+      );
+    }
+  };
 
   useEffect(() => {
-    router.navigate("/(tabs)/home");
-  });
+    if (!isNavigated) {
+      setIsNavigated(true);
+    }
+
+    const timeoutId = setTimeout(() => {
+      Navigation();
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [userId]);
+
+  // useEffect(() => {
+  //   router.navigate("/(tabs)/home");
+  // });
   return (
     <ScreenWrapper style={{ backgroundColor: colors.primary }}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

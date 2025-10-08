@@ -11,10 +11,10 @@ import Header from "@/components/Header";
 
 const Home = () => {
   const [showForm, setShowForm] = useState(false);
-  
+
   return (
     <>
-      <Header icon={<BellIcon color="white" size={20}/>}/>
+      <Header icon={<BellIcon color="white" size={20} />} />
       <ScreenWrapper>
         <View style={styles.container}>
           <View style={styles.header}>
@@ -50,12 +50,12 @@ const Home = () => {
               <Text>Recent Applicants</Text>
             </View>
 
-            <View style={{marginTop: verticalScale(10)}}>
-              {/* <RecentJobsApplid
+            <View style={{ marginTop: verticalScale(10) }}>
+              <RecentJobsApplid
                 name="John"
                 role="Full Stack Developer"
                 date="10/10/2025"
-              /> */}
+              />
             </View>
           </View>
 
@@ -106,30 +106,29 @@ const styles = StyleSheet.create({
   // },
 
   postJobBtn: {
-  position: "absolute",
-  bottom: 60,
-  right: 10,
-},
+    position: "absolute",
+    bottom: 60,
+    right: 10,
+  },
 
-fab: {
-  width: 60,
-  height: 60,
-  borderRadius: 30,
-  backgroundColor: colors.primary,
-  justifyContent: "center",
-  alignItems: "center",
-  shadowColor: "#000",
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-  elevation: 6,
-},
+  fab: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 6,
+  },
 
-plus: {
-  fontSize: scale(28),
-  color: colors.white,
-  fontWeight: "bold",
-  marginTop: -2, 
-},
-
+  plus: {
+    fontSize: scale(28),
+    color: colors.white,
+    fontWeight: "bold",
+    marginTop: -2,
+  },
 });

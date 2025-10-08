@@ -94,10 +94,18 @@ const JobCard: React.FC<{ job: any }> = ({ job }) => {
 
         <View style={styles.cardBottom}>
           <Text style={styles.salary}>
-            {job.salary || "$15k - $20k"}
+            {job.salary?.min} - {job.salary?.max}
             <Text style={styles.month}>/Month</Text>
           </Text>
-          <TouchableOpacity style={styles.applyBtn}>
+          <TouchableOpacity
+            style={styles.applyBtn}
+            onPress={() =>
+              router.push({
+                pathname: "/applyOnJob",
+                params: { job_id: job._id },
+              })
+            }
+          >
             <Text style={styles.applyBtnText}>Apply Now</Text>
           </TouchableOpacity>
         </View>

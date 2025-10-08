@@ -37,6 +37,7 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="entranceScreen" />
           <Stack.Screen name="auth" />
+          <Stack.Screen name="verifyEmail" />
           <Stack.Screen name="applicantDetailScreen" />
           <Stack.Screen name="jobDetailScreen" />
           <Stack.Screen name="postJobScreen" />

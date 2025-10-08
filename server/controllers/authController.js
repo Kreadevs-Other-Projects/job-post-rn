@@ -55,6 +55,7 @@ const register = async (req, res) => {
     await user.save();
 
     return res.status(201).json({
+      success: true,
       message: "User registered successfully. Verification email sent.",
       user: {
         id: user._id,
@@ -144,6 +145,7 @@ const verifyEmail = async (req, res) => {
     await user.save();
 
     return res.status(200).json({
+      success: true,
       message: "Email verified successfully",
       user: {
         id: user._id,

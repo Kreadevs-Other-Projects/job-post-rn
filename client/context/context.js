@@ -70,11 +70,20 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     console.log("AuthToken", authToken);
-    
+
     if (authToken) {
       fetchAllJobs();
     }
   }, [authToken]);
+
+  const fetchAllListedJobs = async () => {
+    const response = await fetch(`${url}/jobs/getAllJobs`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  };
 
   return (
     <AppContext.Provider

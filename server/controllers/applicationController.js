@@ -39,7 +39,7 @@ const listApplications = async (req, res) => {
       .populate("job")
       .sort({ createdAt: -1 });
 
-    return res.json(apps);
+    return res.status(200).json({ success: true, apps });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
