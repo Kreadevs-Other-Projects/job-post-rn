@@ -32,8 +32,8 @@ type submitFormProps = {
   requirements?: string;
   skills?: string;
   benefits?: string;
-  minSalary?: string;
-  maxSalary?: string;
+  minSalary?: number;
+  maxSalary?: number;
 };
 
 const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
@@ -46,7 +46,7 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
     title: "",
     companyName: "",
     location: "",
-    JobType: "",
+    jobType: "",
     experience: "",
     description: "",
     requirements: "",
@@ -59,24 +59,29 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const handleChange = (field: keyof submitFormProps, value: string) => {
-    if (field === "minSalary") {
-      let cleaned = value.replace(/^\$/, "");
-      setSubmitForm((prev) => ({
-        ...prev,
-        expectedSalary: cleaned ? `$${cleaned}` : "",
-      }));
-    } else if (field === "maxSalary") {
-      let cleaned = value.replace(/^\$/, "");
-      setSubmitForm((prev) => ({
-        ...prev,
-        expectedSalary: cleaned ? `$${cleaned}` : "",
-      }));
-    } else {
-      setSubmitForm((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    }
+    // if (field === "minSalary") {
+    //   let cleaned = value.replace(/^\$/, "");
+    //   setSubmitForm((prev) => ({
+    //     ...prev,
+    //     minSalary: cleaned ? `$${cleaned}` : "",
+    //   }));
+    // } else if (field === "maxSalary") {
+    //   let cleaned = value.replace(/^\$/, "");
+    //   setSubmitForm((prev) => ({
+    //     ...prev,
+    //     maxSalary: cleaned ? `$${cleaned}` : "",
+    //   }));
+    // } else {
+    //   setSubmitForm((prev) => ({
+    //     ...prev,
+    //     [field]: value,
+    //   }));
+    // }
+
+    setSubmitForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
   const slideAnim = useRef(new Animated.Value(height)).current;
 
@@ -107,7 +112,8 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
 
     try {
       const response = await fetch(
-        `http://192.168.100.102:5000/api/jobs/addJob`,
+        `http://192.168.100.7:5000/api/jobs/addJob`,
+        // `http://192.168.100.102:5000/api/jobs/addJob`,
         {
           method: "POST",
           headers: {
@@ -118,7 +124,7 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
             title: submitForm.title,
             companyName: submitForm.companyName,
             location: submitForm.location,
-            JobType: submitForm.JobType,
+            jobType: submitForm.jobType,
             experience: submitForm.experience,
             description: submitForm.description,
             requirements: submitForm.requirements,
@@ -141,13 +147,13 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
       } else {
         Toast.show({
           type: "error",
-          text1: result.message,
+          text1: result.message || "missing field",
         });
       }
     } catch (error: any) {
       Toast.show({
         type: "error",
-        text1: error.message,
+        text1: error.message || "Internal Server Error",
       });
     }
   };
@@ -238,9 +244,9 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
                 maxHeight={200}
                 labelField="label"
                 valueField="value"
-                value={submitForm.JobType}
+                value={submitForm.jobType}
                 onChange={(item) => {
-                  setSubmitForm({ ...submitForm, JobType: item.value });
+                  setSubmitForm({ ...submitForm, jobType: item.value });
                 }}
               />
             </View>
@@ -252,6 +258,32 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
               onChangeText={(description) =>
                 handleChange("description", description)
               }
+            />
+
+            <TextInput
+              placeholder="Requirements (comma separated)"
+              style={[styles.input, { height: 60, textAlignVertical: "top" }]}
+              multiline
+              value={submitForm.requirements}
+              onChangeText={(requirements) =>
+                handleChange("requirements", requirements)
+              }
+            />
+
+            <TextInput
+              placeholder="Skills (comma separated)"
+              style={[styles.input, { height: 60, textAlignVertical: "top" }]}
+              multiline
+              value={submitForm.skills}
+              onChangeText={(skills) => handleChange("skills", skills)}
+            />
+
+            <TextInput
+              placeholder="Benefits (comma separated)"
+              style={[styles.input, { height: 60, textAlignVertical: "top" }]}
+              multiline
+              value={submitForm.benefits}
+              onChangeText={(benefits) => handleChange("benefits", benefits)}
             />
 
             <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
@@ -278,7 +310,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    maxHeight: "100%",
+    maxHeight: "90%",
     position: "absolute",
     bottom: 0,
     left: 0,

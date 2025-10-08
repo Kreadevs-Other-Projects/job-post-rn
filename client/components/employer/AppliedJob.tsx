@@ -24,7 +24,7 @@ const ApplicantCard = ({ id, name, role, date }) => {
 
       <TouchableOpacity
         style={styles.viewBtn}
-        onPress={() => router.navigate(`/employer/applicantDetailScreen?id=${id}`)}
+        // onPress={() => router.navigate(`/applicantDetailScreen?id${id}`)}
       >
         <Text style={styles.viewText}>View</Text>
       </TouchableOpacity>

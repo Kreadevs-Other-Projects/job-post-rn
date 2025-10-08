@@ -4,9 +4,9 @@ import ScreenWrapper from "@/components/ScreenWrapper";
 import { scale, verticalScale } from "@/utils/styling";
 import { colors, radius, spacingX } from "@/constants/style";
 import DashboardCard from "@/components/employer/DashboardCard";
-import { LogIcon, SignOut, TrendUpIcon } from "phosphor-react-native";
+import { BellIcon, LogIcon, SignOut, TrendUpIcon } from "phosphor-react-native";
 import RecentJobsApplid from "@/components/employer/AppliedJob";
-import PostJobForm from "./postJobScreen";
+import PostJobForm from "../postJobScreen";
 import Header from "@/components/Header";
 
 const Home = () => {
@@ -14,7 +14,7 @@ const Home = () => {
   
   return (
     <>
-      <Header icon={<SignOut color="white" size={20}/>}/>
+      <Header icon={<BellIcon color="white" size={20}/>}/>
       <ScreenWrapper>
         <View style={styles.container}>
           <View style={styles.header}>
@@ -51,11 +51,11 @@ const Home = () => {
             </View>
 
             <View style={{marginTop: verticalScale(10)}}>
-              <RecentJobsApplid
+              {/* <RecentJobsApplid
                 name="John"
                 role="Full Stack Developer"
                 date="10/10/2025"
-              />
+              /> */}
             </View>
           </View>
 

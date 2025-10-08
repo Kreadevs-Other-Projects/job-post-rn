@@ -197,7 +197,7 @@ const Auth = () => {
         text2: "User Login Successfully",
       });
       if (role === "employer") {
-        router.replace("/employer/home");
+        router.replace("/(employer)/home");
       } else {
         router.replace("/(tabs)/home");
       }

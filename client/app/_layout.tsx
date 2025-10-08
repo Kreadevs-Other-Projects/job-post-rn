@@ -4,8 +4,7 @@ import { useFonts } from "expo-font";
 import "react-native-reanimated";
 import { useContext, useEffect } from "react";
 import Toast from "react-native-toast-message";
-import { AppContext, AppProvider } from '../context/context.js'
-import EmployerLayout from "./employer/_layout.js";
+import { AppContext, AppProvider } from "../context/context.js";
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -24,8 +23,6 @@ export default function RootLayout() {
     return null;
   }
 
-  
-
   return (
     <>
       <AppProvider>
@@ -34,18 +31,18 @@ export default function RootLayout() {
           screenOptions={{
             headerShown: false,
             gestureEnabled: false,
-            animation: 'slide_from_right',
+            animation: "slide_from_right",
           }}
         >
           <Stack.Screen name="index" />
           <Stack.Screen name="entranceScreen" />
           <Stack.Screen name="auth" />
-          <Stack.Screen name="employer" />
-
+          <Stack.Screen name="applicantDetailScreen" />
+          <Stack.Screen name="jobDetailScreen" />
+          <Stack.Screen name="postJobScreen" />
         </Stack>
         <StatusBar style="dark" />
         <Toast />
-
       </AppProvider>
     </>
   );

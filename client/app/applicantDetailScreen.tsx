@@ -1,11 +1,22 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
 import React from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { colors, radius, spacingX } from "@/constants/style";
 import { scale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
-import { ArrowLeftIcon, BackpackIcon, SkipBackIcon } from "phosphor-react-native";
+import {
+  ArrowLeftIcon,
+  BackpackIcon,
+  SkipBackIcon,
+} from "phosphor-react-native";
 
 const ApplicantDetailScreen = () => {
   const navigation = useNavigation();
@@ -27,7 +38,7 @@ const ApplicantDetailScreen = () => {
 
   return (
     <>
-    <ScreenWrapper>
+      {/* <ScreenWrapper>
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 100 }}>
       <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
         <ArrowLeftIcon size={24} color={colors.primary} />
@@ -68,17 +79,17 @@ const ApplicantDetailScreen = () => {
         </TouchableOpacity>
       </View>
     </ScrollView>
-    </ScreenWrapper>
+    </ScreenWrapper> */}
     </>
   );
 };
 
-const DetailRow = ({ label, value }) => (
-  <View style={styles.row}>
-    <Text style={styles.label}>{label}</Text>
-    <Text style={styles.value}>{value}</Text>
-  </View>
-);
+// const DetailRow = ({ label, value }) => (
+//   <View style={styles.row}>
+//     <Text style={styles.label}>{label}</Text>
+//     <Text style={styles.value}>{value}</Text>
+//   </View>
+// );
 
 export default ApplicantDetailScreen;
 
@@ -167,7 +178,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   actionText: {
-    textAlign: 'center',
+    textAlign: "center",
     color: "#fff",
     fontWeight: "600",
     fontSize: scale(16),

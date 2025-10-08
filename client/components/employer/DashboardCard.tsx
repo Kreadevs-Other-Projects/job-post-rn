@@ -12,10 +12,7 @@ type cardProps = {
 const DashboardCard = ({ title, count, icons }: cardProps) => {
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        pressed && styles.cardPressed,
-      ]}
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
     >
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.count}>{count}</Text>

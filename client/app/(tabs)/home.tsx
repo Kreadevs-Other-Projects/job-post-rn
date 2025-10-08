@@ -17,7 +17,7 @@ import JobCard from "@/components/JobCard";
 import { AppContext } from "@/context/context";
 const Home = () => {
   const [expanded, setExpanded] = useState(false);
-  const { setAllJob, allJobs } = useContext(AppContext)
+  const { setAllJob, allJobs } = useContext(AppContext);
 
   const cardData = [
     {
@@ -43,7 +43,7 @@ const Home = () => {
 
   // useEffect(() => {
   //   console.log("allJobs",allJobs);
-    
+
   // }, [])
 
   return (

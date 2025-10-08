@@ -2,6 +2,8 @@ const Job = require("../models/Job");
 
 const addJob = async (req, res) => {
   try {
+    console.log("Received job data:", req.body); // 👈 Debug log
+
     const {
       title,
       companyName,
@@ -51,9 +53,11 @@ const addJob = async (req, res) => {
       job,
     });
   } catch (err) {
+    console.error("Error in addJob:", err.message); // 👈 Add detailed error log
     res.status(500).json({ error: err.message });
   }
 };
+
 
 const listJobs = async (req, res) => {
   try {
