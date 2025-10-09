@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
   const [role, setRole] = useState("");
   const [allJobs, setAllJobs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [employerJobs, setEmployerJobs] = useState([]);
 
   const userRef = useRef();
 
@@ -52,7 +53,6 @@ export const AppProvider = ({ children }) => {
       });
 
       const result = await response.json();
-      console.log("data", result);
 
       if (Array.isArray(result)) {
         setAllJobs(result);
@@ -77,13 +77,33 @@ export const AppProvider = ({ children }) => {
   }, [authToken]);
 
   const fetchAllListedJobs = async () => {
-    const response = await fetch(`${url}/jobs/getAllJobs`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const response = await fetch(`${url}/jobs/getAllJobs`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const jobs = result.jobs[0];
+        setEmployerJobs(jobs.title);
+        console.log(jobs.title);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
   };
+
+  useEffect(() => {
+    console.log("AuthToken", authToken);
+
+    if (authToken && role === "employer") {
+      fetchAllListedJobs();
+    }
+  }, [authToken]);
 
   return (
     <AppContext.Provider
@@ -97,7 +117,9 @@ export const AppProvider = ({ children }) => {
         setRole,
         allJobs,
         setAllJobs,
+        setEmployerJobs,
         loading,
+        employerJobs,
       }}
     >
       {children}
