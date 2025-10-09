@@ -263,6 +263,48 @@ const getRecommendedJobs = async (req, res) => {
   }
 };
 
+const getJobsByOwner = async (req, res) => {
+  try {
+    const { owner_id } = req.query;
+
+    if (!owner_id) {
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Owner ID is required",
+      });
+    }
+
+    const jobs = await Job.find({ owner: owner_id })
+      .sort({ createdAt: -1 })
+      .populate("owner", "name email role");
+
+    if (!jobs || jobs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "No jobs found for this owner",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      count: jobs.length,
+      message: "Jobs fetched successfully",
+      jobs,
+    });
+  } catch (err) {
+    console.error("Error fetching jobs by owner:", err);
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Server error",
+      error: err.message,
+    });
+  }
+};
+
 module.exports = {
   addJob,
   listJobs,
@@ -272,4 +314,5 @@ module.exports = {
   updateJob,
   deleteJob,
   getRecommendedJobs,
+  getJobsByOwner,
 };
