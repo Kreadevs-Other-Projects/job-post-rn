@@ -5,35 +5,47 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  FlatList,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { colors, radius, spacingX } from "@/constants/style";
 import { scale, verticalScale } from "@/utils/styling";
 import { Ionicons } from "@expo/vector-icons";
 import ScreenWrapper from "@/components/ScreenWrapper";
 import Header from "@/components/Header";
+import { AppContext } from "@/context/context";
+import { useFocusEffect } from "expo-router";
+import { url } from "../url";
+import PostedJobCard from "@/components/employer/postedJobCard";
 
 const PostedJob = () => {
-  const [postedJobs, setPostedJobs] = useState([
-    {
-      _id: "1",
-      title: "Frontend Developer",
-      companyName: "KreaDevs",
-      location: "Karachi, Pakistan",
-      salary: { min: 60000, max: 90000 },
-      jobType: "Full Time",
-      date: "2025-10-05",
-    },
-    {
-      _id: "2",
-      title: "React Native Engineer",
-      companyName: "TechNova",
-      location: "Remote",
-      salary: { min: 120000, max: 150000 },
-      jobType: "Part Time",
-      date: "2025-10-01",
-    },
-  ]);
+  // const { employerJobs, setEmployerJobs } = useContext(AppContext);
+
+  const [employerJobs, setEmployerJobs] = useState([]);
+
+  const fetchAllListedJobs = async () => {
+    try {
+      const response = await fetch(`${url}/jobs/getAllJobs`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setEmployerJobs(result.jobs);
+        console.log(result.jobs);
+      }
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllListedJobs();
+  }, []);
 
   const handleDelete = (id: any) => {
     Alert.alert(
@@ -77,7 +89,7 @@ const PostedJob = () => {
   return (
     <View style={styles.container}>
       <Header />
-      <ScreenWrapper>
+      {/* <ScreenWrapper>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 50 }}
@@ -146,7 +158,30 @@ const PostedJob = () => {
             </View>
           ))}
         </ScrollView>
-      </ScreenWrapper>
+      </ScreenWrapper> */}
+
+      <View style={styles.cards}>
+        <View>
+          <Text style={styles.text}>
+            Job Posted by{" "}
+            <Text style={{ color: colors.primary, fontSize: scale(12) }}>
+              {/* {employerJobs[0].companyName || "Unknown"} */}
+            </Text>
+          </Text>
+        </View>
+        <FlatList
+          data={employerJobs}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item, index }) => (
+            <PostedJobCard
+              job={item}
+              index={index}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          )}
+        />
+      </View>
     </View>
   );
 };
@@ -158,82 +193,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.neutral100 || "#F9FAFB",
   },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: radius._15 || 18,
-    padding: scale(14),
-    marginBottom: verticalScale(14),
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-    marginHorizontal: spacingX._15,
+
+  cards: {
+    padding: 16,
   },
-  cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  jobTitle: {
-    fontSize: scale(15),
-    fontWeight: "600",
-    color: colors.black || "#1A1A1A",
-  },
-  badge: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-  },
-  badgeText: {
-    fontSize: scale(12),
-    fontWeight: "500",
-  },
-  company: {
-    color: "#4B5563",
-    fontSize: scale(13),
-    marginTop: 4,
-  },
-  location: {
-    color: "#6B7280",
-    fontSize: scale(12),
-    marginBottom: 8,
-  },
-  salaryContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  salaryLabel: {
-    fontSize: scale(12),
-    color: "#6B7280",
-    marginRight: 4,
-  },
-  salaryValue: {
-    fontSize: scale(13),
-    fontWeight: "600",
-    color: "#1A7F4B",
-  },
-  date: {
-    fontSize: scale(12),
-    color: "#9CA3AF",
-    marginBottom: 10,
-  },
-  actionRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    gap: 10,
-  },
-  actionBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  actionText: {
-    marginLeft: 4,
-    fontSize: scale(12),
-    fontWeight: "500",
+
+  text: {
+    margin: scale(15),
+    fontSize: scale(20),
+    fontWeight: 600,
   },
 });

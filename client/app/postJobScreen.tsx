@@ -1,6 +1,8 @@
 import { colors, radius, spacingX } from "@/constants/style";
+import { AppContext } from "@/context/context";
 import { verticalScale } from "@/utils/styling";
-import React, { useEffect, useRef, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Modal,
   View,
@@ -111,9 +113,10 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
     }
 
     try {
+      const ownerId = await AsyncStorage.getItem("userId");
       const response = await fetch(
         // `http://192.168.100.7:5000/api/jobs/addJob`,
-        `http://192.168.100.102:5000/api/jobs/addJob`,
+        `http://192.168.100.102:5000/api/jobs/addJob/`,
         {
           method: "POST",
           headers: {
@@ -132,18 +135,33 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
             benefits: submitForm.benefits,
             minSalary: submitForm.minSalary,
             maxSalary: submitForm.maxSalary,
+            owner: ownerId,
           }),
         }
       );
 
       const result = await response.json();
 
-      if (result.Ok) {
+      if (result.success) {
         Toast.show({
           type: "success",
           text1: "Job added sucessfully",
         });
-        setModalVisible(false);
+        onClose();
+
+        setSubmitForm({
+          title: "",
+          companyName: "",
+          location: "",
+          jobType: "",
+          experience: "",
+          description: "",
+          requirements: "",
+          skills: "",
+          benefits: "",
+          minSalary: "",
+          maxSalary: "",
+        });
       } else {
         Toast.show({
           type: "error",
@@ -163,7 +181,7 @@ const PostJobForm = ({ visible, onClose }: postJobScreenProps) => {
       transparent
       visible={visible}
       animationType="slide"
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={onClose}
     >
       <View style={styles.overlay}>
         <TouchableOpacity
