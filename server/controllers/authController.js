@@ -11,12 +11,20 @@ const register = async (req, res) => {
 
   try {
     if (!validateEmail(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Invalid email format",
+      });
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "User already exists",
+      });
     }
 
     const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS || 10));
@@ -56,6 +64,7 @@ const register = async (req, res) => {
 
     return res.status(201).json({
       success: true,
+      status: 201,
       message: "User registered successfully. Verification email sent.",
       user: {
         id: user._id,
@@ -67,9 +76,12 @@ const register = async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Register error:", err);
-    return res
-      .status(500)
-      .json({ message: "Server error", error: err.message });
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
@@ -78,23 +90,37 @@ const login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (!user)
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Invalid credentials",
+      });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Invalid credentials",
+      });
 
     if (!user.isVerified) {
-      return res
-        .status(403)
-        .json({ message: "Please verify your email first." });
+      return res.status(403).json({
+        success: false,
+        status: 403,
+        message: "Please verify your email first.",
+      });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    return res.json({
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: "Login successful",
       token,
       user: {
         id: user._id,
@@ -105,17 +131,41 @@ const login = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).send("Server error");
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().sort({ createdAt: -1 }).select("-password");
-    return res.status(200).json(users);
+
+    if (users.length === 0) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "No users found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: "Users fetched successfully",
+      users,
+    });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
@@ -124,20 +174,36 @@ const verifyEmail = async (req, res) => {
 
   try {
     if (!email || !code) {
-      return res.status(400).json({ message: "Email and code are required" });
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Email and code are required",
+      });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "User not found",
+      });
     }
 
     if (user.isVerified) {
-      return res.status(400).json({ message: "User already verified" });
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "User already verified",
+      });
     }
 
     if (user.verificationCode !== Number(code)) {
-      return res.status(400).json({ message: "Invalid verification code" });
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Invalid verification code",
+      });
     }
 
     user.isVerified = true;
@@ -146,6 +212,7 @@ const verifyEmail = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      status: 200,
       message: "Email verified successfully",
       user: {
         id: user._id,
@@ -157,7 +224,12 @@ const verifyEmail = async (req, res) => {
     });
   } catch (err) {
     console.error("Email verification error:", err);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
@@ -167,15 +239,28 @@ const deleteUser = async (req, res) => {
 
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "User not found",
+      });
     }
 
     await User.findByIdAndDelete(id);
 
-    return res.status(200).json({ message: "User deleted successfully" });
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: "User deleted successfully",
+    });
   } catch (err) {
     console.error("Delete user error:", err);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 

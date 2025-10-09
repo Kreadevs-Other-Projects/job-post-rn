@@ -8,20 +8,20 @@ const {
   getAllApplications,
   getApplication,
   updateStatus,
-  appliedJobs,
+  listOfficeApplications,
 } = require("../controllers/applicationController");
 
 router.post("/apply", upload.single("file"), apply);
 
-router.get("/listApplications", listApplications);
-router.post("/userApplications", listUserApplications);
+router.get("/listApplications", listApplications); //this route display posted jobs and the number of applicant applied
+router.post("/userApplications", listUserApplications); // this route display the applicant applied on a jobs
 
 router.get("/getAllApplications", getAllApplications);
-
-router.get("/appliedJobs", appliedJobs);
 
 router.get("/getApplication/:id", getApplication);
 
 router.put("/updateStatus/:id", updateStatus);
+
+router.get("/listOfficeApplications/:id", listOfficeApplications);
 
 module.exports = router;

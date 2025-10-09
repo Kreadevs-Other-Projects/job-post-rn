@@ -1,13 +1,15 @@
 const Application = require("../models/Application");
+const Job = require("../models/Job");
 
 const apply = async (req, res) => {
   try {
     const { name, email, description, job_id } = req.body;
 
     if (!name || !email || !job_id) {
-      return res
-        .status(400)
-        .json({ error: "Name, email, and job ID are required" });
+      return res.status(400).json({
+        success: false,
+        message: "Name, email, and job ID are required",
+      });
     }
 
     const resumeUrl = req.file ? `/uploads/${req.file.filename}` : null;
@@ -21,11 +23,13 @@ const apply = async (req, res) => {
     });
 
     await application.save();
-    return res
-      .status(201)
-      .json({ success: true, message: "Application submitted", application });
+    return res.status(201).json({
+      success: true,
+      message: "Application submitted successfully",
+      application,
+    });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ success: false, error: err.message });
   }
 };
 
@@ -52,28 +56,31 @@ const listApplications = async (req, res) => {
       apps,
     });
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: err.message,
-    });
+    return res.status(500).json({ success: false, error: err.message });
   }
 };
 
 const listUserApplications = async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: "Email is required" });
+    if (!email)
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
 
     const apps = await Application.find({ email })
-      .populate("job")
+      .populate("job_id")
       .sort({ createdAt: -1 });
 
     if (apps.length === 0)
-      return res.json({ message: "No applications found for this user" });
+      return res.status(404).json({
+        success: false,
+        message: "No applications found for this user",
+      });
 
-    return res.json(apps);
+    return res.status(200).json({ success: true, count: apps.length, apps });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ success: false, error: err.message });
   }
 };
 
@@ -84,7 +91,6 @@ const getAllApplications = async (req, res) => {
       .sort({ createdAt: -1 });
 
     if (!applications || applications.length === 0) {
-      console.warn("⚠ No applications found.");
       return res.status(404).json({
         success: false,
         message: "No applications found",
@@ -97,7 +103,6 @@ const getAllApplications = async (req, res) => {
       applications,
     });
   } catch (err) {
-    console.error(err);
     res.status(500).json({
       success: false,
       message: "Server error",
@@ -109,16 +114,16 @@ const getAllApplications = async (req, res) => {
 const getApplication = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Invalid ID" });
-    }
 
-    const app = await Application.findById(id).populate("job");
-    if (!app) return res.status(404).json({ error: "Application not found" });
+    const app = await Application.findById(id).populate("job_id");
+    if (!app)
+      return res
+        .status(404)
+        .json({ success: false, message: "Application not found" });
 
-    res.json(app);
+    res.json({ success: true, app });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 
@@ -128,46 +133,100 @@ const updateStatus = async (req, res) => {
     const { status } = req.body;
 
     if (!["waiting", "cancelled", "interview"].includes(status)) {
-      return res.status(400).json({ error: "Invalid status" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value",
+      });
     }
 
     const app = await Application.findByIdAndUpdate(
       id,
       { status },
       { new: true }
-    ).populate("job");
+    ).populate("job_id");
 
-    if (!app) return res.status(404).json({ error: "Application not found" });
+    if (!app)
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
 
-    res.json({ message: "Status updated", application: app });
+    res.json({
+      success: true,
+      message: "Status updated successfully",
+      application: app,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-const appliedJobs = async (req, res) => {
-  try {
-    const { email } = req.query;
-    if (!email) return res.status(400).json({ error: "Email is required" });
-
-    const applications = await Application.find({ email })
-      .populate("job")
-      .sort({ createdAt: -1 });
-
-    res.json(applications);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 
 const uploadResume = async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    if (!req.file)
+      return res
+        .status(400)
+        .json({ success: false, message: "No file uploaded" });
 
     const resumeUrl = `/uploads/${req.file.filename}`;
-    res.json({ message: "Resume uploaded", resumeUrl });
+    res.json({ success: true, message: "Resume uploaded", resumeUrl });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+const listOfficeApplications = async (req, res) => {
+  try {
+    const { owner_id } = req.query;
+
+    if (!owner_id) {
+      return res.status(400).json({
+        success: false,
+        status: 400,
+        message: "Owner ID (office) is required",
+      });
+    }
+
+    const jobs = await Job.find({ owner: owner_id }).select(
+      "_id title companyName"
+    );
+
+    if (jobs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "No jobs found for this office",
+      });
+    }
+
+    const jobIds = jobs.map((j) => j._id);
+    const applications = await Application.find({ job_id: { $in: jobIds } })
+      .populate("job_id")
+      .sort({ createdAt: -1 });
+
+    if (applications.length === 0) {
+      return res.status(404).json({
+        success: false,
+        status: 404,
+        message: "No applicants found for this office's jobs",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      status: 200,
+      totalJobs: jobs.length,
+      totalApplications: applications.length,
+      jobs,
+      applications,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      status: 500,
+      message: "Server error",
+      error: err.message,
+    });
   }
 };
 
@@ -178,6 +237,6 @@ module.exports = {
   getAllApplications,
   getApplication,
   updateStatus,
-  appliedJobs,
   uploadResume,
+  listOfficeApplications,
 };
