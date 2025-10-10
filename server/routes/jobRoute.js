@@ -20,6 +20,6 @@ router.get("/getJob/:id", getJob);
 router.get("/recommended", getRecommendedJobs);
 router.put("/update/:id", updateJob);
 router.delete("/delete/:id", deleteJob);
-router.get("/getJobsByOwner", getJobsByOwner); // fetch jobs by owner_id
+router.get("/getJobsByOwner", getJobsByOwner); // fetch jobs by owner_ids
 
 module.exports = router;
