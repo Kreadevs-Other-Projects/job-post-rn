@@ -76,6 +76,7 @@ export const AppProvider = ({ children }) => {
     }
   }, [authToken]);
 
+<<<<<<< HEAD
   const fetchAllListedJobs = async () => {
     try {
       const response = await fetch(`${url}/jobs/getAllJobs`, {
@@ -96,6 +97,36 @@ export const AppProvider = ({ children }) => {
       console.log(error.message);
     }
   };
+=======
+  // const fetchAllListedJobs = async () => {
+  //   try {
+  //     const response = await fetch(`${url}/jobs/getAllJobs`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     const result = await response.json();
+
+  //     if (result.success) {
+  //       const jobs = result.jobs[0];
+  //       setEmployerJobs(jobs.title);
+  //       console.log(jobs.title);
+  //     }
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   console.log("AuthToken", authToken);
+
+  //   if (authToken && role === "employer") {
+  //     fetchAllListedJobs();
+  //   }
+  // }, [authToken]);
+>>>>>>> c955c900808b6bf086b5347abd20d45b14837740
 
   useEffect(() => {
     console.log("AuthToken", authToken);

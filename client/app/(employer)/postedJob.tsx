@@ -17,6 +17,7 @@ import { AppContext } from "@/context/context";
 import { useFocusEffect } from "expo-router";
 import { url } from "../url";
 import PostedJobCard from "@/components/employer/postedJobCard";
+<<<<<<< HEAD
 import PostJobForm from "../postJobScreen";
 
 interface JobUpdateData {
@@ -37,12 +38,17 @@ interface JobResponse {
   message: string;
   job?: any; // you can define a `Job` interface for stricter typing later
 }
+=======
+>>>>>>> c955c900808b6bf086b5347abd20d45b14837740
 
 const PostedJob = () => {
   // const { employerJobs, setEmployerJobs } = useContext(AppContext);
 
   const [employerJobs, setEmployerJobs] = useState([]);
+<<<<<<< HEAD
   const [showForm, setShowForm] = useState(false);
+=======
+>>>>>>> c955c900808b6bf086b5347abd20d45b14837740
 
   const fetchAllListedJobs = async () => {
     try {
@@ -207,6 +213,7 @@ const PostedJob = () => {
         </ScrollView>
       </ScreenWrapper> */}
 
+<<<<<<< HEAD
       {employerJobs ? (
         <View style={styles.cards}>
           <View>
@@ -237,6 +244,30 @@ const PostedJob = () => {
       )}
 
       <PostJobForm visible={showForm} onClose={() => setShowForm(false)} />
+=======
+      <View style={styles.cards}>
+        <View>
+          <Text style={styles.text}>
+            Job Posted by{" "}
+            <Text style={{ color: colors.primary, fontSize: scale(12) }}>
+              {/* {employerJobs[0].companyName || "Unknown"} */}
+            </Text>
+          </Text>
+        </View>
+        <FlatList
+          data={employerJobs}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item, index }) => (
+            <PostedJobCard
+              job={item}
+              index={index}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          )}
+        />
+      </View>
+>>>>>>> c955c900808b6bf086b5347abd20d45b14837740
     </View>
   );
 };
